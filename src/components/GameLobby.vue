@@ -1,0 +1,248 @@
+<template>
+  <router-link to="/" id="home">X</router-link>
+  <h1>Game Lobby</h1>
+  <p>Game ID: {{ gameID }}</p>
+  <p v-if="game">{{ currentTurnName }}'s turn</p>
+
+  <template v-if="game">
+    <div id="score">
+      <div class="top">{{ game.player1 }}</div>
+      <div class="top right">{{ game.player2 }}</div>
+      <div class="bottom">{{ game.wins.player1 }}</div>
+      <div class="bottom right">{{ game.wins.player2 }}</div>
+    </div>
+  </template>
+
+  <div v-if="game" id="game-board">
+    <div
+      v-for="(item, index) in game.boardState"
+      :id="'pos' + index"
+      :key="'pos' + index"
+      @click="makeMove(index)"
+    >
+      {{ item }}
+    </div>
+  </div>
+
+  <template v-if="game">
+    <h2 v-if="gameMessage">{{ gameMessage }}</h2>
+    <button v-if="game.gameState != 'In Progress'" @click="newGame">
+      New Game
+    </button>
+  </template>
+
+  <p v-if="error" class="error-message">{{ error }}</p>
+</template>
+
+<script>
+import { getDatabase, ref, onValue, update } from "firebase/database";
+
+export default {
+  props: ["gameID", "player"],
+  data() {
+    return {
+      game: null,
+      error: null,
+      gameMessage: null,
+    };
+  },
+  computed: {
+    currentTurnName: function () {
+      return this.game[this.game.currentTurn];
+    },
+  },
+  created() {
+    this.getGame();
+  },
+  methods: {
+    newGame() {
+      this.gameMessage = null;
+      const db = getDatabase();
+      const updates = {};
+
+      let newGameStartTurn =
+        this.game.currentTurn === "player1" ? "player2" : "player1";
+
+      updates["games/" + this.gameID + "/currentTurn"] = newGameStartTurn;
+      updates["games/" + this.gameID + "/boardState"] = [
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+      ];
+      updates["games/" + this.gameID + "/gameState"] = "In Progress";
+
+      update(ref(db), updates);
+    },
+    makeMove(index) {
+      if (this.game.gameState != "In Progress") {
+        this.error = "Game is over.";
+        return false;
+      }
+
+      const playersHere = this.game.full;
+      const myTurn = this.game.currentTurn === this.player;
+      const emptySpace = this.game.boardState[index] === "";
+
+      if (!playersHere) {
+        this.error = "Other player must join.";
+      } else if (!myTurn) {
+        this.error = "Please wait your turn.";
+      } else if (!emptySpace) {
+        this.error = "Please select an empty space.";
+      } else {
+        this.error = null;
+
+        const XO = this.player === "player1" ? "X" : "O";
+        this.game.boardState[index] = XO;
+
+        const db = getDatabase();
+        const updates = {};
+        updates["games/" + this.gameID + "/boardState"] = this.game.boardState;
+
+        let gameState = this.checkGameState();
+
+        if (gameState === "In Progress") {
+          this.game.currentTurn =
+            this.game.currentTurn === "player1" ? "player2" : "player1";
+
+          updates["games/" + this.gameID + "/currentTurn"] =
+            this.game.currentTurn;
+        } else if (gameState === "won") {
+          updates["games/" + this.gameID + "/gameState"] = gameState;
+          updates["games/" + this.gameID + "/wins/" + this.game.currentTurn] =
+            this.game.wins[this.game.currentTurn] + 1;
+
+          this.gameMessage = `${this.currentTurnName} win's the game!`;
+        } else if (gameState === "tie") {
+          updates["games/" + this.gameID + "/gameState"] = gameState;
+          this.gameMessage = "It's a tie!";
+        }
+
+        update(ref(db), updates);
+      }
+    },
+    checkGameState() {
+      let gameState = "In Progress";
+      let board = this.game.boardState;
+
+      const winConditions = [
+        [0, 1, 2],
+        [3, 4, 5],
+        [6, 7, 8],
+        [0, 3, 6],
+        [1, 4, 7],
+        [2, 5, 8],
+        [0, 4, 8],
+        [2, 4, 6],
+      ];
+
+      winConditions.forEach((condition) => {
+        if (
+          board[condition[0]] != "" &&
+          board[condition[0]] === board[condition[1]] &&
+          board[condition[1]] === board[condition[2]]
+        ) {
+          gameState = "won";
+        }
+      });
+
+      if (!board.includes("") && gameState != "won") {
+        gameState = "tie";
+      }
+
+      return gameState;
+    },
+    getGame() {
+      const db = getDatabase();
+      const game = ref(db, "games/" + this.gameID);
+      onValue(game, (snapshot) => {
+        const data = snapshot.val();
+        this.game = data;
+      });
+    },
+  },
+  watch: {
+    game: function () {
+      this.error = null;
+    },
+  },
+};
+</script>
+
+<style scoped>
+#home {
+  display: block;
+  margin-left: auto;
+  width: 20px;
+  text-decoration: none;
+}
+
+h2 {
+  text-align: center;
+}
+
+#score {
+  margin: 0 auto 50px auto;
+  width: 300px;
+  display: grid;
+  grid-template-columns: 150px 150px;
+  grid-template-rows: 50px 50px;
+}
+
+#score div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#score .top {
+  border-bottom: 2px solid black;
+}
+
+#score .bottom {
+  
+}
+
+#score .right {
+  border-left: 2px solid black;
+}
+
+#game-board {
+  margin: 0 auto;
+  width: 300px;
+  display: grid;
+  grid-template-columns: 100px 100px 100px;
+  grid-template-rows: 100px 100px 100px;
+}
+
+#game-board div {
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 48px;
+  font-weight: bold;
+}
+
+#pos1,
+#pos7 {
+  border-right: 2px solid black;
+  border-left: 2px solid black;
+}
+
+#pos3,
+#pos5 {
+  border-top: 2px solid black;
+  border-bottom: 2px solid black;
+}
+
+#pos4 {
+  border: 2px solid black;
+}
+</style>
