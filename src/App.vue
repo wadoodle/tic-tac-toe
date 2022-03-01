@@ -35,7 +35,8 @@ html {
   font-family: "Jost", sans-serif;
 }
 
-body {
+body,
+p {
   margin: 0;
 }
 

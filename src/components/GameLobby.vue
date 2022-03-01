@@ -202,10 +202,6 @@ h2 {
   border-bottom: 2px solid black;
 }
 
-#score .bottom {
-  
-}
-
 #score .right {
   border-left: 2px solid black;
 }

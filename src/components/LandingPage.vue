@@ -2,7 +2,10 @@
   <h1>Tic Tac Toe</h1>
   <div>
     <label id="name-input">Player Name: </label>
-    <input id="name-input" type="text" v-model="playerNameNew" /><br />
+    <input id="name-input" type="text" v-model="playerName" />
+    <p v-if="nameError" class="error-message">{{ nameError }}</p>
+  </div>
+  <div style="margin-top: 50px">
     <button @click="newGame">Create New Game</button>
     <p v-if="createError" class="error-message">{{ createError }}</p>
   </div>
@@ -10,15 +13,18 @@
   <div style="margin-top: 50px">
     <label id="game-id-input">Game ID: </label>
     <input id="game-id-input" type="text" v-model="gameID" /><br />
-
-    <label id="name-input">Player Name: </label>
-    <input id="name-input" type="text" v-model="playerNameJoin" /><br />
-
     <button @click="checkFull">Join Game</button>
     <p v-if="joinError" class="error-message">{{ joinError }}</p>
   </div>
 
-  <p>{{ data }}</p>
+  <div v-if="joinableGames" style="margin-top: 50px">
+    <template v-for="game in joinableGames" :key="game.gameID">
+      <div v-if="game.full == false">
+        <p>{{ game.player1 }}'s Lobby</p>
+        <button @click="setLobbyID(game.gameID)">Join Game</button>
+      </div>
+    </template>
+  </div>
 </template>
 
 <script>
@@ -35,27 +41,38 @@ import {
 export default {
   data() {
     return {
-      data: null,
-      playerNameNew: "",
-      playerNameJoin: "",
+      joinableGames: null,
+      playerName: "",
       gameID: "",
+      nameError: null,
       createError: null,
       joinError: null,
     };
   },
-  created() {},
+  created() {
+    this.getJoinableGames();
+  },
   methods: {
+    getJoinableGames() {
+      const db = getDatabase();
+      const games = ref(db, "games");
+      onValue(games, (snapshot) => {
+        const data = snapshot.val();
+        this.joinableGames = data;
+      });
+    },
     newGame() {
-      if (this.playerNameNew == "") {
-        this.createError = "Please enter a name.";
+      let name = this.validateName();
+      if(!name) {
         return false;
       }
 
       const db = getDatabase();
       const gameID = this.generateID(25);
       set(ref(db, "games/" + gameID), {
+        gameID: gameID,
         full: false,
-        player1: this.playerNameNew,
+        player1: this.playerName,
         currentTurn: "player1",
         boardState: ["", "", "", "", "", "", "", "", ""],
         gameState: "In Progress",
@@ -71,8 +88,10 @@ export default {
       if (this.gameID == "") {
         this.joinError = "Please enter a game ID.";
         return false;
-      } else if (this.playerNameJoin == "") {
-        this.joinError = "Please enter a name.";
+      }
+
+      let name = this.validateName();
+      if(!name) {
         return false;
       }
 
@@ -84,7 +103,7 @@ export default {
           if (full == null) {
             this.joinError = "Please enter a valid game ID";
           } else if (full != true) {
-            this.joinGame();
+            this.joinGameByID();
           } else {
             this.joinError = "Game is full.";
           }
@@ -93,10 +112,19 @@ export default {
           console.error(error);
         });
     },
-    joinGame() {
+    setLobbyID(gameID) {
+      let name = this.validateName();
+      if(!name) {
+        return false;
+      }
+
+      this.gameID = gameID;
+      this.joinGameByID();
+    },
+    joinGameByID() {
       const db = getDatabase();
       const updates = {};
-      updates["games/" + this.gameID + "/player2"] = this.playerNameJoin;
+      updates["games/" + this.gameID + "/player2"] = this.playerName;
       updates["games/" + this.gameID + "/full"] = true;
       update(ref(db), updates)
         .then(() => {
@@ -120,15 +148,6 @@ export default {
         profile_picture: "imageURL.jpg",
       });
     },
-    getItems() {
-      //for refernce
-      const db = getDatabase();
-      const users = ref(db, "users");
-      onValue(users, (snapshot) => {
-        const data = snapshot.val();
-        this.data = data;
-      });
-    },
     generateID(length) {
       const characters =
         "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -139,6 +158,15 @@ export default {
         i++;
       }
       return id;
+    },
+    validateName() {
+      let name = false;
+      if (this.playerName != "") {
+        name = true;
+      } else {
+        this.nameError = "Please enter a name.";
+      }
+      return name;
     },
   },
 };
