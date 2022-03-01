@@ -24,8 +24,8 @@
     </div>
   </div>
 
-  <template v-if="game">
-    <h2 v-if="gameMessage">{{ gameMessage }}</h2>
+  <template v-if="game && game.gameState != 'In Progress'">
+    <h2>{{ game.gameState }}</h2>
     <button v-if="game.gameState != 'In Progress'" @click="newGame">
       New Game
     </button>
@@ -43,7 +43,6 @@ export default {
     return {
       game: null,
       error: null,
-      gameMessage: null,
     };
   },
   computed: {
@@ -56,7 +55,6 @@ export default {
   },
   methods: {
     newGame() {
-      this.gameMessage = null;
       const db = getDatabase();
       const updates = {};
 
@@ -113,16 +111,14 @@ export default {
 
           updates["games/" + this.gameID + "/currentTurn"] =
             this.game.currentTurn;
-        } else if (gameState === "won") {
+        } else if (gameState === "It's a tie!") {
+          updates["games/" + this.gameID + "/gameState"] = gameState;
+        } else {
+          //someone has won
           updates["games/" + this.gameID + "/gameState"] = gameState;
           updates["games/" + this.gameID + "/wins/" + this.game.currentTurn] =
             this.game.wins[this.game.currentTurn] + 1;
-
-          this.gameMessage = `${this.currentTurnName} win's the game!`;
-        } else if (gameState === "tie") {
-          updates["games/" + this.gameID + "/gameState"] = gameState;
-          this.gameMessage = "It's a tie!";
-        }
+        } 
 
         update(ref(db), updates);
       }
@@ -148,12 +144,13 @@ export default {
           board[condition[0]] === board[condition[1]] &&
           board[condition[1]] === board[condition[2]]
         ) {
-          gameState = "won";
+          
+          gameState = `${this.currentTurnName} win's the game!`;
         }
       });
 
       if (!board.includes("") && gameState != "won") {
-        gameState = "tie";
+        gameState = "It's a tie!";
       }
 
       return gameState;
