@@ -56,6 +56,7 @@ export default {
   },
   methods: {
     newGame() {
+      //reset game state
       const db = getDatabase();
       const updates = {};
 
@@ -79,6 +80,7 @@ export default {
       update(ref(db), updates);
     },
     makeMove(index) {
+      //can only move if the game hasn't ended
       if (this.game.gameState != "In Progress") {
         this.error = "Game is over.";
         return false;
@@ -88,6 +90,7 @@ export default {
       const myTurn = this.game.currentTurn === this.player;
       const emptySpace = this.game.boardState[index] === "";
 
+      //can only move if other player is present, it's your turn, and an empty space has been selected.
       if (!playersHere) {
         this.error = "Other player must join.";
       } else if (!myTurn) {
@@ -97,22 +100,27 @@ export default {
       } else {
         this.error = null;
 
+        //first player gets X's second player gets 0's
         const XO = this.player === "player1" ? "X" : "O";
         this.game.boardState[index] = XO;
 
+        //record move to db
         const db = getDatabase();
         const updates = {};
         updates["games/" + this.gameID + "/boardState"] = this.game.boardState;
 
+        //check if move ends the game
         let gameState = this.checkGameState();
 
         if (gameState === "In Progress") {
+          //if not set currentTurn to next player
           this.game.currentTurn =
             this.game.currentTurn === "player1" ? "player2" : "player1";
 
           updates["games/" + this.gameID + "/currentTurn"] =
             this.game.currentTurn;
         } else if (gameState === "It's a tie!") {
+          //if so update game state
           updates["games/" + this.gameID + "/gameState"] = gameState;
         } else {
           //someone has won
@@ -139,6 +147,7 @@ export default {
         [2, 4, 6],
       ];
 
+      //check for win
       winConditions.forEach((condition) => {
         if (
           board[condition[0]] != "" &&
@@ -150,6 +159,7 @@ export default {
         }
       });
 
+      //check for tie
       if (!board.includes("") && gameState != "won") {
         gameState = "It's a tie!";
       }
@@ -157,6 +167,7 @@ export default {
       return gameState;
     },
     getGame() {
+      //get game data and watch it for updates
       const db = getDatabase();
       const game = ref(db, "games/" + this.gameID);
       onValue(game, (snapshot) => {
@@ -168,10 +179,12 @@ export default {
       const db = getDatabase();
       const updates = {};
 
+      //if only player in lobby, then delete game data
       if(this.player === 'player1' && !this.game.full) {
         updates["games/" + this.gameID] = null;
         update(ref(db), updates)
       } else {
+        //reset game state
         const remainingPlayer = this.player === 'player1' ? 'player2' : 'player1';
         const remainingPlayerName = this.game[remainingPlayer];
 

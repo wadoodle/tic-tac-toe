@@ -13,7 +13,7 @@
   <div style="margin-top: 50px">
     <label id="game-id-input">Game ID: </label>
     <input id="game-id-input" type="text" v-model="gameID" /><br />
-    <button @click="checkFull">Join Game</button>
+    <button @click="checkGameValidity">Join Game</button>
     <p v-if="joinError" class="error-message">{{ joinError }}</p>
   </div>
 
@@ -54,6 +54,7 @@ export default {
   },
   methods: {
     getJoinableGames() {
+      //get all existing games that aren't full
       const db = getDatabase();
       const games = ref(db, "games");
       onValue(games, (snapshot) => {
@@ -67,6 +68,7 @@ export default {
         return false;
       }
 
+      //create new game data then navigate to game page
       const db = getDatabase();
       const gameID = this.generateID(25);
       set(ref(db, "games/" + gameID), {
@@ -84,7 +86,8 @@ export default {
         this.$router.push("/game/" + gameID + "/player1");
       });
     },
-    checkFull() {
+    checkGameValidity() {
+      //check game id was entered
       if (this.gameID == "") {
         this.joinError = "Please enter a game ID.";
         return false;
@@ -100,6 +103,7 @@ export default {
         .then((snapshot) => {
           const full = snapshot.val();
 
+          //join game if it exists and is not full
           if (full == null) {
             this.joinError = "Please enter a valid game ID";
           } else if (full != true) {
@@ -160,6 +164,7 @@ export default {
       return id;
     },
     validateName() {
+      //check if a name was entered
       let name = false;
       if (this.playerName != "") {
         name = true;
