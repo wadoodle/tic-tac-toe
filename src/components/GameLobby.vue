@@ -1,5 +1,5 @@
 <template>
-  <router-link to="/" id="home">X</router-link>
+  <button id="leave-game" @click="leaveGame">X</button>
   <h1>Game Lobby</h1>
   <p>Game ID: {{ gameID }}</p>
   <p v-if="game">{{ currentTurnName }}'s turn</p>
@@ -52,6 +52,7 @@ export default {
   },
   created() {
     this.getGame();
+    window.addEventListener('beforeunload', this.leaveGame);
   },
   methods: {
     newGame() {
@@ -163,6 +164,33 @@ export default {
         this.game = data;
       });
     },
+    leaveGame() {
+      const db = getDatabase();
+      const updates = {};
+
+      if(this.player === 'player1' && !this.game.full) {
+        updates["games/" + this.gameID] = null;
+        update(ref(db), updates)
+      } else {
+        const remainingPlayer = this.player === 'player1' ? 'player2' : 'player1';
+        const remainingPlayerName = this.game[remainingPlayer];
+
+        updates["games/" + this.gameID + "/full"] = false;
+        updates["games/" + this.gameID + "/player1"] = remainingPlayerName;
+        updates["games/" + this.gameID + "/player2"] = null;
+        updates["games/" + this.gameID + "/currentTurn"] = 'player1';
+        updates["games/" + this.gameID + "/boardState"] = ["", "", "", "", "", "", "", "", ""];
+        updates["games/" + this.gameID + "/gameState"] = "In Progress";
+        updates["games/" + this.gameID + "/wins"] = {
+          player1: 0,
+          player2: 0,
+        };
+        update(ref(db), updates)
+        .then(
+          this.$router.push('/')
+        );
+      }   
+    }
   },
   watch: {
     game: function () {
@@ -173,11 +201,16 @@ export default {
 </script>
 
 <style scoped>
-#home {
+#leave-game {
   display: block;
   margin-left: auto;
   width: 20px;
-  text-decoration: none;
+  border: none;
+  padding: 5px 6px;
+}
+
+#leave-game:hover {
+  cursor: pointer;
 }
 
 h2 {
