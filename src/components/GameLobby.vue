@@ -43,11 +43,12 @@
 import { getDatabase, ref, onValue, update } from "firebase/database";
 
 export default {
-  props: ["gameID", "player"],
+  props: ["gameID", "setPlayer"],
   data() {
     return {
       game: null,
       error: null,
+      player: this.setPlayer,
     };
   },
   computed: {
@@ -188,6 +189,9 @@ export default {
       if(this.player === 'player1' && !this.game.full) {
         updates["games/" + this.gameID] = null;
         update(ref(db), updates)
+        .then(
+          this.$router.push('/')
+        );
       } else {
         //reset game state
         const remainingPlayer = this.player === 'player1' ? 'player2' : 'player1';
@@ -213,6 +217,11 @@ export default {
   watch: {
     game: function () {
       this.error = null;
+
+      if(this.player === 'player2' && !this.game.full) {
+        this.player = 'player1';
+      }
+
     },
   },
 };

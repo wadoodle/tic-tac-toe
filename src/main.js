@@ -9,7 +9,7 @@ const router = createRouter({
   history: createWebHistory(),
   routes: [
     { path: '/', component: LandingPage },
-    { path: '/game/:gameID/:player', component: GameLobby, props: true },
+    { path: '/game/:gameID/:setPlayer', component: GameLobby, props: true },
   ]
 })
 
