@@ -1,30 +1,34 @@
 <template>
-  <h1>Tic Tac Toe</h1>
-  <div>
-    <label id="name-input">Player Name: </label>
-    <input id="name-input" type="text" v-model="playerName" />
-    <p v-if="nameError" class="error-message">{{ nameError }}</p>
-  </div>
-  <div style="margin-top: 50px">
-    <button @click="newGame">Create New Game</button>
-    <p v-if="createError" class="error-message">{{ createError }}</p>
-  </div>
+  <h1 class="center-text">Tic Tac Toe</h1>
+  <form class="form-style">
+    <div>
+      <label id="name-input">Enter player name </label>
+      <input id="name-input" type="text" v-model="playerName" />
+      <p v-if="nameError" class="error-message">{{ nameError }}</p>
+    </div>
 
-  <div style="margin-top: 50px">
-    <label id="game-id-input">Game ID: </label>
-    <input id="game-id-input" type="text" v-model="gameID" /><br />
-    <button @click="checkGameValidity">Join Game</button>
-    <p v-if="joinError" class="error-message">{{ joinError }}</p>
-  </div>
+    <div>
+      <button @click.prevent="newGame">Create New Game</button>
+      <p v-if="createError" class="error-message">{{ createError }}</p>
+    </div>
 
-  <div v-if="joinableGames" style="margin-top: 50px">
-    <template v-for="game in joinableGames" :key="game.gameID">
-      <div v-if="game.full == false">
-        <p>{{ game.player1 }}'s Lobby</p>
-        <button @click="setLobbyID(game.gameID)">Join Game</button>
-      </div>
-    </template>
-  </div>
+    <!--div>
+      <label id="game-id-input">Game ID: </label>
+      <input id="game-id-input" type="text" v-model="gameID" /><br />
+      <button @click.prevent="checkGameValidity">Join Game</button>
+      <p v-if="joinError" class="error-message">{{ joinError }}</p>
+    </div-->
+
+    <div v-if="joinableGames">
+      <template v-for="game in joinableGames" :key="game.gameID">
+        <div v-if="game.full == false">
+          <p>{{ game.player1 }}'s Lobby</p>
+          <button @click.prevent="setLobbyID(game.gameID)">Join Game</button>
+        </div>
+      </template>
+    </div>
+
+  </form>
 </template>
 
 <script>
@@ -64,7 +68,7 @@ export default {
     },
     newGame() {
       let name = this.validateName();
-      if(!name) {
+      if (!name) {
         return false;
       }
 
@@ -82,8 +86,13 @@ export default {
           player1: 0,
           player2: 0,
         },
-      }).then(() => {
+      })
+      .then(() => {
         this.$router.push("/game/" + gameID + "/player1");
+      })
+      .catch((error) => {
+        alert(error);
+        console.log(error);
       });
     },
     checkGameValidity() {
@@ -94,7 +103,7 @@ export default {
       }
 
       let name = this.validateName();
-      if(!name) {
+      if (!name) {
         return false;
       }
 
@@ -118,7 +127,7 @@ export default {
     },
     setLobbyID(gameID) {
       let name = this.validateName();
-      if(!name) {
+      if (!name) {
         return false;
       }
 

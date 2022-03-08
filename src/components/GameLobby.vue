@@ -2,16 +2,19 @@
   <button id="leave-game" @click="leaveGame">X</button>
   <h1>Game Lobby</h1>
   <p>Game ID: {{ gameID }}</p>
-  <p v-if="game">{{ currentTurnName }}'s turn</p>
 
   <template v-if="game">
     <div id="score">
-      <div class="top">{{ game.player1 }}</div>
-      <div class="top right">{{ game.player2 }}</div>
+      <div class="top">{{ game.player1 }} X's</div>
+      <div class="top right">
+        <span v-if="game.player2">{{ game.player2 }} O's</span>
+        </div>
       <div class="bottom">{{ game.wins.player1 }}</div>
       <div class="bottom right">{{ game.wins.player2 }}</div>
     </div>
   </template>
+
+  <h3 v-if="game" class="center-text">{{ currentTurnName }}'s turn</h3>
 
   <div v-if="game" id="game-board">
     <div
@@ -24,9 +27,11 @@
     </div>
   </div>
 
-  <template v-if="game && game.gameState != 'In Progress'">
+  <template v-if="game && game.gameState !== 'In Progress'">
     <h2>{{ game.gameState }}</h2>
-    <button v-if="game.gameState != 'In Progress'" @click="newGame">
+    <button v-if="game.gameState !== 'In Progress'" 
+    @click="newGame"
+    id="new-game-btn">
       New Game
     </button>
   </template>
@@ -216,7 +221,7 @@ export default {
 <style scoped>
 #leave-game {
   display: block;
-  margin-left: auto;
+  margin: 25px 25px 25px auto;
   width: 20px;
   border: none;
   padding: 5px 6px;
@@ -224,6 +229,11 @@ export default {
 
 #leave-game:hover {
   cursor: pointer;
+}
+
+#new-game-btn {
+  display: block;
+  margin: 0 auto;
 }
 
 h2 {
@@ -253,7 +263,7 @@ h2 {
 }
 
 #game-board {
-  margin: 0 auto;
+  margin: 25px auto;
   width: 300px;
   display: grid;
   grid-template-columns: 100px 100px 100px;
