@@ -8,32 +8,34 @@
       <div class="top">{{ game.player1 }} X's</div>
       <div class="top right">
         <span v-if="game.player2">{{ game.player2 }} O's</span>
-        </div>
+      </div>
       <div class="bottom">{{ game.wins.player1 }}</div>
       <div class="bottom right">{{ game.wins.player2 }}</div>
     </div>
-  </template>
 
-  <h3 v-if="game" class="center-text">{{ currentTurnName }}'s turn</h3>
+    <h3 class="center-text">{{ currentTurnName }}'s turn</h3>
 
-  <div v-if="game" id="game-board">
-    <div
-      v-for="(item, index) in game.boardState"
-      :id="'pos' + index"
-      :key="'pos' + index"
-      @click="makeMove(index)"
-    >
-      {{ item }}
+    <div id="game-board">
+      <div
+        v-for="(item, index) in game.boardState"
+        :id="'pos' + index"
+        :key="'pos' + index"
+        @click="makeMove(index)"
+      >
+        {{ item }}
+      </div>
     </div>
-  </div>
 
-  <template v-if="game && game.gameState !== 'In Progress'">
-    <h2>{{ game.gameState }}</h2>
-    <button v-if="game.gameState !== 'In Progress'" 
-    @click="newGame"
-    id="new-game-btn">
-      New Game
-    </button>
+    <template v-if="game.gameState !== 'In Progress'">
+      <h2>{{ game.gameState }}</h2>
+      <button
+        v-if="game.gameState !== 'In Progress'"
+        @click="newGame"
+        id="new-game-btn"
+      >
+        New Game
+      </button>
+    </template>
   </template>
 
   <p v-if="error" class="error-message">{{ error }}</p>
@@ -58,7 +60,7 @@ export default {
   },
   created() {
     this.getGame();
-    window.addEventListener('beforeunload', this.leaveGame);
+    window.addEventListener("beforeunload", this.leaveGame);
   },
   methods: {
     newGame() {
@@ -87,7 +89,7 @@ export default {
     },
     makeMove(index) {
       //can only move if the game hasn't ended
-      if (this.game.gameState != "In Progress") {
+      if (this.game.gameState !== "In Progress") {
         this.error = "Game is over.";
         return false;
       }
@@ -133,7 +135,7 @@ export default {
           updates["games/" + this.gameID + "/gameState"] = gameState;
           updates["games/" + this.gameID + "/wins/" + this.game.currentTurn] =
             this.game.wins[this.game.currentTurn] + 1;
-        } 
+        }
 
         update(ref(db), updates);
       }
@@ -156,11 +158,10 @@ export default {
       //check for win
       winConditions.forEach((condition) => {
         if (
-          board[condition[0]] != "" &&
+          board[condition[0]] !== "" &&
           board[condition[0]] === board[condition[1]] &&
           board[condition[1]] === board[condition[2]]
         ) {
-          
           gameState = `${this.currentTurnName} win's the game!`;
         }
       });
@@ -179,49 +180,53 @@ export default {
       onValue(game, (snapshot) => {
         const data = snapshot.val();
         this.game = data;
-      });
+      })
     },
     leaveGame() {
       const db = getDatabase();
       const updates = {};
 
       //if only player in lobby, then delete game data
-      if(this.player === 'player1' && !this.game.full) {
+      if (this.player === "player1" && !this.game.full) {
         updates["games/" + this.gameID] = null;
-        update(ref(db), updates)
-        .then(
-          this.$router.push('/')
-        );
+        update(ref(db), updates).then(this.$router.push("/"));
       } else {
         //reset game state
-        const remainingPlayer = this.player === 'player1' ? 'player2' : 'player1';
+        const remainingPlayer =
+          this.player === "player1" ? "player2" : "player1";
         const remainingPlayerName = this.game[remainingPlayer];
 
         updates["games/" + this.gameID + "/full"] = false;
         updates["games/" + this.gameID + "/player1"] = remainingPlayerName;
         updates["games/" + this.gameID + "/player2"] = null;
-        updates["games/" + this.gameID + "/currentTurn"] = 'player1';
-        updates["games/" + this.gameID + "/boardState"] = ["", "", "", "", "", "", "", "", ""];
+        updates["games/" + this.gameID + "/currentTurn"] = "player1";
+        updates["games/" + this.gameID + "/boardState"] = [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+        ];
         updates["games/" + this.gameID + "/gameState"] = "In Progress";
         updates["games/" + this.gameID + "/wins"] = {
           player1: 0,
           player2: 0,
         };
-        update(ref(db), updates)
-        .then(
-          this.$router.push('/')
-        );
-      }   
-    }
+        update(ref(db), updates).then(this.$router.push("/"));
+      }
+    },
   },
   watch: {
     game: function () {
       this.error = null;
 
-      if(this.player === 'player2' && !this.game.full) {
-        this.player = 'player1';
+      if (this.player === "player2" && !this.game.full) {
+        this.player = "player1";
       }
-
     },
   },
 };

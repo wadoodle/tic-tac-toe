@@ -7,10 +7,7 @@
       <p v-if="nameError" class="error-message">{{ nameError }}</p>
     </div>
 
-    <div>
-      <button @click.prevent="newGame">Create New Game</button>
-      <p v-if="createError" class="error-message">{{ createError }}</p>
-    </div>
+    <create-game :player-name="playerName"></create-game>
 
     <!--div>
       <label id="game-id-input">Game ID: </label>
@@ -21,7 +18,7 @@
 
     <div v-if="joinableGames">
       <template v-for="game in joinableGames" :key="game.gameID">
-        <div v-if="game.full == false">
+        <div v-if="game.full === false">
           <p>{{ game.player1 }}'s Lobby</p>
           <button @click.prevent="setLobbyID(game.gameID)">Join Game</button>
         </div>
@@ -38,7 +35,6 @@ import {
   child,
   ref,
   update,
-  set,
   onValue,
 } from "firebase/database";
 
@@ -49,12 +45,16 @@ export default {
       playerName: "",
       gameID: "",
       nameError: null,
-      createError: null,
       joinError: null,
     };
   },
   created() {
     this.getJoinableGames();
+  },
+  provide() {
+    return {
+      validateName: this.validateName,
+    }
   },
   methods: {
     getJoinableGames() {
@@ -66,38 +66,9 @@ export default {
         this.joinableGames = data;
       });
     },
-    newGame() {
-      let name = this.validateName();
-      if (!name) {
-        return false;
-      }
-
-      //create new game data then navigate to game page
-      const db = getDatabase();
-      const gameID = this.generateID(25);
-      set(ref(db, "games/" + gameID), {
-        gameID: gameID,
-        full: false,
-        player1: this.playerName,
-        currentTurn: "player1",
-        boardState: ["", "", "", "", "", "", "", "", ""],
-        gameState: "In Progress",
-        wins: {
-          player1: 0,
-          player2: 0,
-        },
-      })
-      .then(() => {
-        this.$router.push("/game/" + gameID + "/player1");
-      })
-      .catch((error) => {
-        alert(error);
-        console.log(error);
-      });
-    },
     checkGameValidity() {
       //check game id was entered
-      if (this.gameID == "") {
+      if (this.gameID === "") {
         this.joinError = "Please enter a game ID.";
         return false;
       }
@@ -113,7 +84,7 @@ export default {
           const full = snapshot.val();
 
           //join game if it exists and is not full
-          if (full == null) {
+          if (full === null) {
             this.joinError = "Please enter a valid game ID";
           } else if (full != true) {
             this.joinGameByID();
@@ -151,26 +122,6 @@ export default {
           console.log("error");
           console.log(error);
         });
-    },
-    addNewItem() {
-      //for refernce
-      const db = getDatabase();
-      set(ref(db, "games/13579"), {
-        username: "Wadoodle",
-        email: "wadoodle@test.com",
-        profile_picture: "imageURL.jpg",
-      });
-    },
-    generateID(length) {
-      const characters =
-        "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-      let id = "";
-      let i = 0;
-      while (i < length) {
-        id += characters.charAt(Math.floor(Math.random() * characters.length));
-        i++;
-      }
-      return id;
     },
     validateName() {
       //check if a name was entered
