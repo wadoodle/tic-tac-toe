@@ -163,11 +163,11 @@ export default {
           board[condition[1]] === board[condition[2]]
         ) {
           gameState = `${this.currentTurnName} win's the game!`;
-        }
+        } 
       });
 
       //check for tie
-      if (!board.includes("") && gameState != "won") {
+      if (!board.includes("") && gameState === "In Progress") {
         gameState = "It's a tie!";
       }
 

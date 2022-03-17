@@ -4,6 +4,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import App from './App.vue';
 import LandingPage from './components/LandingPage.vue';
 import CreateGame from './components/CreateGame.vue';
+import JoinGame from './components/JoinGame.vue';
 import GameLobby from './components/GameLobby.vue';
 
 const router = createRouter({
@@ -37,6 +38,7 @@ app.use(router);
 
 app.component('landing-page', LandingPage);
 app.component('create-game', CreateGame);
+app.component('join-game', JoinGame);
 app.component('game-lobby', GameLobby);
 
 app.mount('#app');

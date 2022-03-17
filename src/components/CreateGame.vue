@@ -17,7 +17,9 @@ export default {
   props: ['playerName'],
   inject: ['validateName'],
   data() {
-    return {};
+    return {
+      createError: null,
+    };
   },
   created() {},
   methods: {
@@ -46,7 +48,7 @@ export default {
         this.$router.push("/game/" + gameID + "/player1");
       })
       .catch((error) => {
-        alert(error);
+        this.createError = error;
         console.log(error);
       });
     },
