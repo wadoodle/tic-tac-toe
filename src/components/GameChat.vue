@@ -1,9 +1,9 @@
 <template>
   <section id="chat">
     <div id="chat-log">
-    <p v-for="entry in chatLog" :key="entry">
-      <strong>{{ entry.Sender }}:</strong> {{ entry.Message }}
-    </p>
+      <p v-for="entry in chatLog" :key="entry">
+        <strong>{{ entry.Sender }}:</strong> {{ entry.Message }}
+      </p>
     </div>
     <form id="new-message-con">
       <input type="text" v-model="newMessage" />
@@ -21,7 +21,16 @@ export default {
       newMessage: "",
     };
   },
-  created() {},
+  watch: {
+    //scroll chat window to bottom of div when there is a new message
+    //probably a better way to do this without using setTimeout...
+    chatLog: function () {
+      setTimeout(function () {
+        let chatWindow = document.getElementById("chat-log");
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+      }, 100);
+    },
+  },
   methods: {
     sendMessage() {
       this.$emit("send-message", this.newMessage);

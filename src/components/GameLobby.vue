@@ -80,10 +80,7 @@ export default {
       const updates = {};
       updates["games/" + this.gameID + "/chatLog"] = this.game.chatLog;
 
-      update(ref(db), updates).then(function () {
-        let chatWindow = document.getElementById("chat-log");
-        chatWindow.scrollTop = chatWindow.scrollHeight;
-      });
+      update(ref(db), updates);
     },
     newGame() {
       //reset game state
