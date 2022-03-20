@@ -2,7 +2,9 @@
   <button id="leave-game" @click="leaveGame">X</button>
   <h1>Game Lobby</h1>
   <p>Game ID: {{ gameID }}</p>
-  <button @click="playTicTac">Play against TicTac</button>
+  <button v-if="!game || !game.full" @click="playAgainstTicTacBot">
+    Play against TicTac Bot
+  </button>
 
   <template v-if="game">
     <div id="score">
@@ -21,7 +23,7 @@
         v-for="(item, index) in game.boardState"
         :id="'pos' + index"
         :key="'pos' + index"
-        @click="makeMove(index)"
+        @click="makePlayerMove(index)"
       >
         {{ item }}
       </div>
@@ -54,6 +56,17 @@ export default {
       game: null,
       error: null,
       player: this.setPlayer,
+      ticTacBot: false,
+      winConditions: [
+        [0, 1, 2],
+        [3, 4, 5],
+        [6, 7, 8],
+        [0, 3, 6],
+        [1, 4, 7],
+        [2, 5, 8],
+        [0, 4, 8],
+        [2, 4, 6],
+      ],
     };
   },
   computed: {
@@ -94,6 +107,11 @@ export default {
       let newGameStartTurn =
         this.game.currentTurn === "player1" ? "player2" : "player1";
 
+      //make player always first for my testing
+      if (this.ticTacBot) {
+        newGameStartTurn = "player1";
+      }
+
       updates["games/" + this.gameID + "/currentTurn"] = newGameStartTurn;
       updates["games/" + this.gameID + "/boardState"] = [
         "",
@@ -110,7 +128,7 @@ export default {
 
       update(ref(db), updates);
     },
-    makeMove(index) {
+    makePlayerMove(index) {
       //can only move if the game hasn't ended
       if (this.game.gameState !== "In Progress") {
         this.error = "Game is over.";
@@ -160,26 +178,157 @@ export default {
             this.game.wins[this.game.currentTurn] + 1;
         }
 
-        update(ref(db), updates);
+        update(ref(db), updates).then(() => {
+          if (this.ticTacBot) {
+            this.makeBotMove();
+          }
+        });
       }
+    },
+    makeBotMove() {
+      //can only move if the game hasn't ended
+      if (this.game.gameState !== "In Progress") {
+        return false;
+      }
+
+      let winningSpace = this.checkBotWinningMove();
+      let blockingSpace = this.checkBotBlockingMove();
+      let cornerSpace = this.checkBotCornerMove();
+      let centerSpace = this.game.boardState[4] === "" ? true : false;
+
+      if (winningSpace) {
+        console.log("winning");
+        this.game.boardState[winningSpace] = "O";
+      } else if (blockingSpace) {
+        console.log("blocking");
+        this.game.boardState[blockingSpace] = "O";
+      } else if (cornerSpace) {
+        console.log("corner");
+        this.game.boardState[cornerSpace] = "O";
+      } else if(centerSpace) {
+        this.game.boardState[4] = "O";
+      } else {
+        console.log("random");
+        //makes move in random empty space
+        let moveSpace;
+        let emptySpaces = [];
+        this.game.boardState.forEach((space, index) => {
+          if (space === "") {
+            emptySpaces.push(index);
+          }
+        });
+
+        moveSpace = emptySpaces[Math.floor(Math.random() * emptySpaces.length)];
+        this.game.boardState[moveSpace] = "O";
+      }
+
+      this.handleMove(true);
+
+    },
+    checkBotWinningMove() {
+      //is there a winning move?
+      let board = this.game.boardState;
+      let winningSpace;
+      this.winConditions.forEach((condition) => {
+        let o = 0;
+        let empty = 0;
+        let emptySpace;
+
+        condition.forEach((space) => {
+          if (board[space] === "") {
+            empty += 1;
+            emptySpace = space;
+          } else if (board[space] === "O") {
+            o += 1;
+          }
+        });
+
+        if (o === 2 && empty === 1) {
+          winningSpace = emptySpace;
+        }
+      });
+      return winningSpace;
+    },
+    checkBotBlockingMove() {
+      //is there a blocking move?
+      let board = this.game.boardState;
+      let blockingSpace;
+      this.winConditions.forEach((condition) => {
+        let x = 0;
+        let empty = 0;
+        let emptySpace;
+
+        condition.forEach((space) => {
+          if (board[space] === "") {
+            empty += 1;
+            emptySpace = space;
+          } else if (board[space] === "X") {
+            x += 1;
+          }
+        });
+
+        if (x === 2 && empty === 1) {
+          blockingSpace = emptySpace;
+        }
+      });
+      return blockingSpace;
+    },
+    checkBotCornerMove() {
+      let board = this.game.boardState;
+      let moveSpace;
+      let corners = [0, 2, 6, 8];
+      let emptyCorners = [];
+      corners.forEach((space) => {
+        if (board[space] === "") {
+          emptyCorners.push(space);
+        }
+      });
+      //console.log('emptycorners: ' + emptyCorners);
+
+      if (emptyCorners.length > 0) {
+        moveSpace =
+          emptyCorners[Math.floor(Math.random() * emptyCorners.length)];
+      }
+      //console.log('moveSpace: ' + moveSpace)
+      return moveSpace;
+    },
+    handleMove() {
+      //check if move ends the game
+      let gameState = this.checkGameState();
+
+      //record move to db
+      const db = getDatabase();
+      const updates = {};
+
+      if (gameState === "In Progress") {
+        //if not set currentTurn to next player
+        this.game.currentTurn =
+          this.game.currentTurn === "player1" ? "player2" : "player1";
+
+        updates["games/" + this.gameID + "/currentTurn"] =
+          this.game.currentTurn;
+      } else if (gameState === "It's a tie!") {
+        //if so update game state
+        updates["games/" + this.gameID + "/gameState"] = gameState;
+      } else {
+        //someone has won
+        updates["games/" + this.gameID + "/gameState"] = gameState;
+        updates["games/" + this.gameID + "/wins/" + this.game.currentTurn] =
+          this.game.wins[this.game.currentTurn] + 1;
+      }
+
+      updates["games/" + this.gameID + "/boardState"] = this.game.boardState;
+      updates["games/" + this.gameID + "/currentTurn"] = "player1";
+      
+
+      update(ref(db), updates);
     },
     checkGameState() {
       let gameState = "In Progress";
       let board = this.game.boardState;
 
-      const winConditions = [
-        [0, 1, 2],
-        [3, 4, 5],
-        [6, 7, 8],
-        [0, 3, 6],
-        [1, 4, 7],
-        [2, 5, 8],
-        [0, 4, 8],
-        [2, 4, 6],
-      ];
-
       //check for win
-      winConditions.forEach((condition) => {
+      this.winConditions.forEach((condition) => {
         if (
           board[condition[0]] !== "" &&
           board[condition[0]] === board[condition[1]] &&
@@ -210,7 +359,10 @@ export default {
       const updates = {};
 
       //if only player in lobby, then delete game data
-      if (this.player === "player1" && !this.game.full) {
+      if (
+        (this.player === "player1" && !this.game.full) ||
+        this.ticTacBot === true
+      ) {
         updates["games/" + this.gameID] = null;
         update(ref(db), updates).then(this.$router.push("/"));
       } else {
@@ -242,19 +394,15 @@ export default {
         update(ref(db), updates).then(this.$router.push("/"));
       }
     },
-    playTicTac() {
+    playAgainstTicTacBot() {
       const db = getDatabase();
       const updates = {};
-      updates["games/" + this.gameID + "/player2"] = this.playerName;
+      updates["games/" + this.gameID + "/player2"] = "TicTac Bot";
       updates["games/" + this.gameID + "/full"] = true;
 
       update(ref(db), updates)
         .then(() => {
-          this.$router.push("/game/" + this.gameID + "/player2");
-        })
-        .then((resp) => {
-          console.log("resp");
-          console.log(resp);
+          this.ticTacBot = true;
         })
         .catch((error) => {
           console.log("error");
