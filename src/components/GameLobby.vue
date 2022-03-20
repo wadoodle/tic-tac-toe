@@ -2,6 +2,7 @@
   <button id="leave-game" @click="leaveGame">X</button>
   <h1>Game Lobby</h1>
   <p>Game ID: {{ gameID }}</p>
+  <button @click="playTicTac">Play against TicTac</button>
 
   <template v-if="game">
     <div id="score">
@@ -36,11 +37,11 @@
         New Game
       </button>
     </template>
+
+    <p v-if="error" class="error-message">{{ error }}</p>
+
+    <game-chat :chatLog="game.chatLog" @send-message="sendMessage"></game-chat>
   </template>
-
-  <p v-if="error" class="error-message">{{ error }}</p>
-
-  <game-chat :chatLog="game.chatLog" @send-message="sendMessage"></game-chat>
 </template>
 
 <script>
@@ -80,7 +81,10 @@ export default {
       const updates = {};
       updates["games/" + this.gameID + "/chatLog"] = this.game.chatLog;
 
-      update(ref(db), updates);
+      update(ref(db), updates).catch((error) => {
+        console.log("error");
+        console.log(error);
+      });
     },
     newGame() {
       //reset game state
@@ -237,6 +241,25 @@ export default {
         };
         update(ref(db), updates).then(this.$router.push("/"));
       }
+    },
+    playTicTac() {
+      const db = getDatabase();
+      const updates = {};
+      updates["games/" + this.gameID + "/player2"] = this.playerName;
+      updates["games/" + this.gameID + "/full"] = true;
+
+      update(ref(db), updates)
+        .then(() => {
+          this.$router.push("/game/" + this.gameID + "/player2");
+        })
+        .then((resp) => {
+          console.log("resp");
+          console.log(resp);
+        })
+        .catch((error) => {
+          console.log("error");
+          console.log(error);
+        });
     },
   },
   watch: {

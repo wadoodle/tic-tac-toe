@@ -27,7 +27,10 @@ export default {
     chatLog: function () {
       setTimeout(function () {
         let chatWindow = document.getElementById("chat-log");
-        chatWindow.scrollTop = chatWindow.scrollHeight;
+        //prevents this from triggering when leaving a game
+        if(chatWindow) {
+          chatWindow.scrollTop = chatWindow.scrollHeight;
+        }   
       }, 100);
     },
   },
@@ -48,7 +51,7 @@ export default {
 }
 
 #chat-log {
-  height: 100px;
+  height: 120px;
   overflow-y: scroll;
 }
 
@@ -58,7 +61,6 @@ export default {
 
 #new-message-con {
   display: flex;
-  margin-top: 1rem;
 }
 
 #new-message-con input {
