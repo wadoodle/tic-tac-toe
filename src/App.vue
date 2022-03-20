@@ -77,6 +77,7 @@ p {
   font-weight: bold;
 }
 
+#chat input[type="text"],
 .form-style input[type="text"],
 .form-style input[type="date"],
 .form-style input[type="datetime"],
@@ -101,6 +102,7 @@ select {
   outline: none;
 }
 
+#chat input[type="text"]:focus,
 .form-style input[type="text"]:focus,
 .form-style input[type="date"]:focus,
 .form-style input[type="datetime"]:focus,

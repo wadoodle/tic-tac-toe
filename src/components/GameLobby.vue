@@ -40,8 +40,7 @@
 
   <p v-if="error" class="error-message">{{ error }}</p>
 
-  <game-chat :chatLog="game.chatLog" @send-message="sendMessage"
-  ></game-chat>
+  <game-chat :chatLog="game.chatLog" @send-message="sendMessage"></game-chat>
 </template>
 
 <script>
@@ -81,7 +80,10 @@ export default {
       const updates = {};
       updates["games/" + this.gameID + "/chatLog"] = this.game.chatLog;
 
-      update(ref(db), updates);
+      update(ref(db), updates).then(function () {
+        let chatWindow = document.getElementById("chat-log");
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+      });
     },
     newGame() {
       //reset game state

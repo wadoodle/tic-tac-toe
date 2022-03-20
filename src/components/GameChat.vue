@@ -1,9 +1,11 @@
 <template>
   <section id="chat">
+    <div id="chat-log">
     <p v-for="entry in chatLog" :key="entry">
       <strong>{{ entry.Sender }}:</strong> {{ entry.Message }}
     </p>
-    <form class="form-style">
+    </div>
+    <form id="new-message-con">
       <input type="text" v-model="newMessage" />
       <button @click.prevent="sendMessage">Send</button>
     </form>
@@ -30,13 +32,27 @@ export default {
 </script>
 
 <style scoped>
-#chat p {
-  margin: 10px auto;
-  max-width: 800px;
-  padding: 0 20px;
+#chat {
+  width: 600px;
+  max-width: 90%;
+  margin: 0 auto;
 }
 
-.form-style input[type="text"] {
-  width: 80%;
+#chat-log {
+  height: 100px;
+  overflow-y: scroll;
+}
+
+#chat-log p {
+  padding: 1px 0;
+}
+
+#new-message-con {
+  display: flex;
+  margin-top: 1rem;
+}
+
+#new-message-con input {
+  flex-grow: 1;
 }
 </style>
