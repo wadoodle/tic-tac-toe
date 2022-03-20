@@ -10,7 +10,6 @@
     <create-game :player-name="playerName"></create-game>
 
     <join-game :player-name="playerName"></join-game>
-
   </form>
 </template>
 

@@ -39,6 +39,9 @@
   </template>
 
   <p v-if="error" class="error-message">{{ error }}</p>
+
+  <game-chat :chatLog="game.chatLog" @send-message="sendMessage"
+  ></game-chat>
 </template>
 
 <script>
@@ -54,6 +57,9 @@ export default {
     };
   },
   computed: {
+    playerName: function () {
+      return this.game[this.setPlayer];
+    },
     currentTurnName: function () {
       return this.game[this.game.currentTurn];
     },
@@ -63,6 +69,20 @@ export default {
     window.addEventListener("beforeunload", this.leaveGame);
   },
   methods: {
+    sendMessage(message) {
+      let newMessage = {
+        Sender: this.playerName,
+        Message: message,
+      };
+
+      this.game.chatLog.push(newMessage);
+
+      const db = getDatabase();
+      const updates = {};
+      updates["games/" + this.gameID + "/chatLog"] = this.game.chatLog;
+
+      update(ref(db), updates);
+    },
     newGame() {
       //reset game state
       const db = getDatabase();
@@ -163,7 +183,7 @@ export default {
           board[condition[1]] === board[condition[2]]
         ) {
           gameState = `${this.currentTurnName} win's the game!`;
-        } 
+        }
       });
 
       //check for tie
@@ -180,7 +200,7 @@ export default {
       onValue(game, (snapshot) => {
         const data = snapshot.val();
         this.game = data;
-      })
+      });
     },
     leaveGame() {
       const db = getDatabase();

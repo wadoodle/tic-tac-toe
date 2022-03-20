@@ -22,6 +22,8 @@ export default {
 <style>
 * {
   box-sizing: border-box;
+  padding: 0;
+  margin: 0;
 }
 
 html {
@@ -56,7 +58,7 @@ p {
 /* FORM STYLES */
 .form-style {
   margin: 10px auto;
-  max-width: 400px;
+  max-width: 800px;
   padding: 20px 12px 10px 20px;
   font: 13px "Lucida Sans Unicode", "Lucida Grande", sans-serif;
 }

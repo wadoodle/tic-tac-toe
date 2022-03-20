@@ -43,13 +43,18 @@ export default {
           player1: 0,
           player2: 0,
         },
+        chatLog: [
+          {
+            Sender: 'System',
+            Message: 'Welcome to the Game!',
+          }
+        ],
       })
       .then(() => {
         this.$router.push("/game/" + gameID + "/player1");
       })
       .catch((error) => {
         this.createError = error;
-        console.log(error);
       });
     },
     generateID(length) {

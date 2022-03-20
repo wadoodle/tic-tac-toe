@@ -6,6 +6,7 @@ import LandingPage from './components/LandingPage.vue';
 import CreateGame from './components/CreateGame.vue';
 import JoinGame from './components/JoinGame.vue';
 import GameLobby from './components/GameLobby.vue';
+import GameChat from './components/GameChat.vue';
 
 const router = createRouter({
   history: createWebHistory(),
@@ -40,5 +41,6 @@ app.component('landing-page', LandingPage);
 app.component('create-game', CreateGame);
 app.component('join-game', JoinGame);
 app.component('game-lobby', GameLobby);
+app.component('game-chat', GameChat);
 
 app.mount('#app');

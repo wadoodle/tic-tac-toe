@@ -1,10 +1,11 @@
 <template>
-  <div>
+  <!-- this was for joining a game by manually providing the game ID -->
+  <!--div>
     <label id="game-id-input">Game ID: </label>
     <input id="game-id-input" type="text" v-model="gameID" /><br />
     <button @click.prevent="checkGameValidity">Join Game</button>
     <p v-if="joinError" class="error-message">{{ joinError }}</p>
-  </div>
+  </div-->
 
   <div v-if="joinableGames">
     <template v-for="game in joinableGames" :key="game.gameID">
@@ -56,10 +57,6 @@ export default {
       const updates = {};
       updates["games/" + this.gameID + "/player2"] = this.playerName;
       updates["games/" + this.gameID + "/full"] = true;
-
-      console.log("here2");
-      console.log(updates);
-      console.log("here3");
 
       update(ref(db), updates)
         .then(() => {
