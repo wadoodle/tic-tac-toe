@@ -192,14 +192,18 @@ export default {
       }
 
       let winningSpace = this.checkBotWinningOrBlockingMove('winning');
-      let blockingSpace = this.checkBotWinningOrBlockingMove('blocking');
-      let cornerSpace = this.checkBotCornerMove();
-      let centerSpace = this.game.boardState[4] === "" ? true : false;
 
-      if (winningSpace) {
+      let blockingSpace = false;
+      let cornerSpace = false;
+      let centerSpace = false;
+      //let blockingSpace = this.checkBotWinningOrBlockingMove('blocking');
+      //let cornerSpace = this.checkBotCornerMove();
+      //let centerSpace = this.game.boardState[4] === "" ? true : false;
+
+      if (winningSpace !== undefined) {
         console.log("winning");
         this.game.boardState[winningSpace] = "O";
-      } else if (blockingSpace) {
+      } else if (blockingSpace !== undefined) {
         console.log("blocking");
         this.game.boardState[blockingSpace] = "O";
       } else if (cornerSpace) {
@@ -233,8 +237,6 @@ export default {
         checkFor = "X";
       }
 
-      console.log('checking for: ' + checkFor);
-
       //is there a winning or blocking move?
       let board = this.game.boardState;
       let moveSpace;
@@ -255,11 +257,7 @@ export default {
         if (moveType === 2 && empty === 1) {
           moveSpace = emptySpace;
         }
-
-        console.log(moveType);
-        console.log(empty);
       });
-
       return moveSpace;
     },
     checkBotCornerMove() {
