@@ -151,7 +151,7 @@ button:hover {
 }
 
 .form-style button {
-  margin: 15px auto;
+  margin: 15px 10px 15px auto;
 }
 
 .form-style .required {

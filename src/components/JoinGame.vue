@@ -11,7 +11,12 @@
     <template v-for="game in joinableGames" :key="game.gameID">
       <div v-if="game.full === false">
         <p>{{ game.player1 }}'s Lobby</p>
-        <button @click.prevent="setLobbyID(game.gameID)">Join Game</button>
+        <button @click.prevent="setLobbyID(game.gameID, 'join')">
+          Join Game
+        </button>
+        <button @click.prevent="setLobbyID(game.gameID, 'spectate')">
+          Spectate Game (Not Functional)
+        </button>
       </div>
     </template>
   </div>
@@ -19,7 +24,14 @@
 
 
 <script>
-import { getDatabase, ref, onValue, update, get, child } from "firebase/database";
+import {
+  getDatabase,
+  ref,
+  onValue,
+  update,
+  get,
+  child,
+} from "firebase/database";
 
 export default {
   props: ["playerName"],
@@ -43,14 +55,18 @@ export default {
         this.joinableGames = data;
       });
     },
-    setLobbyID(gameID) {
+    setLobbyID(gameID, action) {
       let name = this.validateName();
       if (!name) {
         return false;
       }
 
       this.gameID = gameID;
-      this.joinGameByID();
+      if (action === "join") {
+        this.joinGameByID();
+      } else if (action === "spectate") {
+        this.spectateGameByID();
+      }
     },
     joinGameByID() {
       const db = getDatabase();
@@ -62,14 +78,13 @@ export default {
         .then(() => {
           this.$router.push("/game/" + this.gameID + "/player2");
         })
-        .then((resp) => {
-          console.log("resp");
-          console.log(resp);
-        })
         .catch((error) => {
           console.log("error");
-          console.log(error);
+          alert(error);
         });
+    },
+    spectateGameByID() {
+      //this.$router.push("/game/" + this.gameID + "/" + this.playerName);
     },
     checkGameValidity() {
       //check game id was entered

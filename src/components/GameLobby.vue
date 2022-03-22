@@ -83,8 +83,16 @@ export default {
   },
   methods: {
     sendMessage(message) {
+
+      let sender;
+      if(this.player !== 'player1' && this.player !== 'player2') {
+        sender = this.playerName;
+      } else {
+        sender = this.player;
+      }
+
       let newMessage = {
-        Sender: this.playerName,
+        Sender: sender,
         Message: message,
       };
 
@@ -192,27 +200,19 @@ export default {
       }
 
       let winningSpace = this.checkBotWinningOrBlockingMove('winning');
-
-      let blockingSpace = false;
-      let cornerSpace = false;
-      let centerSpace = false;
-      //let blockingSpace = this.checkBotWinningOrBlockingMove('blocking');
-      //let cornerSpace = this.checkBotCornerMove();
-      //let centerSpace = this.game.boardState[4] === "" ? true : false;
+      let blockingSpace = this.checkBotWinningOrBlockingMove('blocking');
+      let cornerSpace = this.checkBotCornerMove();
+      let centerSpace = this.game.boardState[4] === "" ? true : false;
 
       if (winningSpace !== undefined) {
-        console.log("winning");
         this.game.boardState[winningSpace] = "O";
       } else if (blockingSpace !== undefined) {
-        console.log("blocking");
         this.game.boardState[blockingSpace] = "O";
       } else if (cornerSpace) {
-        console.log("corner");
         this.game.boardState[cornerSpace] = "O";
       } else if(centerSpace) {
         this.game.boardState[4] = "O";
       } else {
-        console.log("random");
         //makes move in random empty space
         let moveSpace;
         let emptySpaces = [];
@@ -270,13 +270,12 @@ export default {
           emptyCorners.push(space);
         }
       });
-      //console.log('emptycorners: ' + emptyCorners);
 
       if (emptyCorners.length > 0) {
         moveSpace =
           emptyCorners[Math.floor(Math.random() * emptyCorners.length)];
       }
-      //console.log('moveSpace: ' + moveSpace)
+
       return moveSpace;
     },
     handleMove() {
