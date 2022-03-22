@@ -191,8 +191,8 @@ export default {
         return false;
       }
 
-      let winningSpace = this.checkBotWinningMove();
-      let blockingSpace = this.checkBotBlockingMove();
+      let winningSpace = this.checkBotWinningOrBlockingMove('winning');
+      let blockingSpace = this.checkBotWinningOrBlockingMove('blocking');
       let cornerSpace = this.checkBotCornerMove();
       let centerSpace = this.game.boardState[4] === "" ? true : false;
 
@@ -225,12 +225,21 @@ export default {
       this.handleMove(true);
 
     },
-    checkBotWinningMove() {
-      //is there a winning move?
+    checkBotWinningOrBlockingMove(moveType) {
+      let checkFor;
+      if(moveType === 'winning') {
+        checkFor = "O";
+      } else if(moveType === 'blocking') {
+        checkFor = "X";
+      }
+
+      console.log('checking for: ' + checkFor);
+
+      //is there a winning or blocking move?
       let board = this.game.boardState;
-      let winningSpace;
+      let moveSpace;
       this.winConditions.forEach((condition) => {
-        let o = 0;
+        let moveType = 0;
         let empty = 0;
         let emptySpace;
 
@@ -238,40 +247,20 @@ export default {
           if (board[space] === "") {
             empty += 1;
             emptySpace = space;
-          } else if (board[space] === "O") {
-            o += 1;
+          } else if (board[space] === checkFor) {
+            moveType += 1;
           }
         });
 
-        if (o === 2 && empty === 1) {
-          winningSpace = emptySpace;
+        if (moveType === 2 && empty === 1) {
+          moveSpace = emptySpace;
         }
-      });
-      return winningSpace;
-    },
-    checkBotBlockingMove() {
-      //is there a blocking move?
-      let board = this.game.boardState;
-      let blockingSpace;
-      this.winConditions.forEach((condition) => {
-        let x = 0;
-        let empty = 0;
-        let emptySpace;
 
-        condition.forEach((space) => {
-          if (board[space] === "") {
-            empty += 1;
-            emptySpace = space;
-          } else if (board[space] === "X") {
-            x += 1;
-          }
-        });
-
-        if (x === 2 && empty === 1) {
-          blockingSpace = emptySpace;
-        }
+        console.log(moveType);
+        console.log(empty);
       });
-      return blockingSpace;
+
+      return moveSpace;
     },
     checkBotCornerMove() {
       let board = this.game.boardState;
