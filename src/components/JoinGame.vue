@@ -11,11 +11,8 @@
     <template v-for="game in joinableGames" :key="game.gameID">
       <div v-if="game.full === false">
         <p>{{ game.player1 }}'s Lobby</p>
-        <button @click.prevent="setLobbyID(game.gameID, 'join')">
+        <button @click.prevent="setLobbyID(game.gameID)">
           Join Game
-        </button>
-        <button @click.prevent="setLobbyID(game.gameID, 'spectate')">
-          Spectate Game (Not Functional)
         </button>
       </div>
     </template>
@@ -55,18 +52,14 @@ export default {
         this.joinableGames = data;
       });
     },
-    setLobbyID(gameID, action) {
+    setLobbyID(gameID) {
       let name = this.validateName();
       if (!name) {
         return false;
       }
 
       this.gameID = gameID;
-      if (action === "join") {
         this.joinGameByID();
-      } else if (action === "spectate") {
-        this.spectateGameByID();
-      }
     },
     joinGameByID() {
       const db = getDatabase();
@@ -82,9 +75,6 @@ export default {
           console.log("error");
           alert(error);
         });
-    },
-    spectateGameByID() {
-      //this.$router.push("/game/" + this.gameID + "/" + this.playerName);
     },
     checkGameValidity() {
       //check game id was entered
