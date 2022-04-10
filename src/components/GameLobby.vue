@@ -34,8 +34,7 @@
       <button
         v-if="game.gameState !== 'In Progress'"
         @click="newGame"
-        id="new-game-btn"
-      >
+        id="new-game-btn">
         New Game
       </button>
     </template>

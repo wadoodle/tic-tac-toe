@@ -1,7 +1,6 @@
 <template>
-  <div class="container">
-    <router-view></router-view>
-  </div>
+  <h1>TIC-TAC-TOE</h1>
+  <router-view @set-name="setName"></router-view>
 </template>
 
 
@@ -14,7 +13,11 @@ export default {
     return {};
   },
   created() {},
-  methods: {},
+  methods: {
+    setName(message) {
+      console.log(message);
+    }
+  },
 };
 </script>
 
@@ -28,6 +31,12 @@ export default {
 
 html {
   font-family: "Jost", sans-serif;
+  height: 100%;
+}
+
+body {
+  background-image: linear-gradient(#50A5B8, #46CBB3);
+  background-repeat: no-repeat;
 }
 
 body,
@@ -35,10 +44,21 @@ p {
   margin: 0;
 }
 
+h1 {
+  text-align: center;
+  font-size: 96px;
+  padding: 50px 0 100px 0;
+  font-family: 'Irish Grover', cursive;
+  background: -webkit-linear-gradient(#F8F8F8, #FFFCF6, #FDEBAE);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
 .container {
-  width: 1200px;
   margin: 0 auto;
   max-width: 90%;
+  background: rgba(248, 248, 248, 0.85); 
+  border-radius: 6px;
 }
 
 .center-text {
@@ -59,7 +79,7 @@ p {
 .form-style {
   margin: 10px auto;
   max-width: 800px;
-  padding: 20px 12px 10px 20px;
+  padding: 25px 10px 25px 10px;
   font: 13px "Lucida Sans Unicode", "Lucida Grande", sans-serif;
 }
 
@@ -91,7 +111,7 @@ select {
   box-sizing: border-box;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
-  border: 1px solid #bebebe;
+  border: none;
   padding: 7px;
   margin: 0px;
   transition: all 0.3s ease-in-out;
@@ -100,6 +120,11 @@ select {
   -ms-transition: all 0.3s ease-in-out;
   -o-transition: all 0.3s ease-in-out;
   outline: none;
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+  border-top: 2px solid #46cbb3;
+  border-bottom: 2px solid #46cbb3;
+  border-left: 2px solid #46cbb3;
 }
 
 #chat input[type="text"]:focus,
@@ -113,10 +138,7 @@ select {
 .form-style input[type="email"]:focus,
 .form-style textarea:focus,
 .form-style select:focus {
-  -moz-box-shadow: 0 0 8px #88d5e9;
-  -webkit-box-shadow: 0 0 8px #88d5e9;
-  box-shadow: 0 0 8px #88d5e9;
-  border: 1px solid #88d5e9;
+  
 }
 
 .form-style .field-divided {
@@ -136,14 +158,16 @@ select {
 }
 
 button {
-  background: #4b99ad;
-  padding: 8px 15px 8px 15px;
+  background: #46cbb3;
+  padding: 9px 15px 9px 15px;
   border: none;
   color: #fff;
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
 }
 
 button:hover {
-  background: #4691a4;
+  background: #2DB29A;
   box-shadow: none;
   -moz-box-shadow: none;
   -webkit-box-shadow: none;

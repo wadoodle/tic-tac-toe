@@ -2,6 +2,7 @@ import { createApp } from 'vue';
 import { createRouter, createWebHistory } from 'vue-router';
 
 import App from './App.vue';
+import WelcomePage from './components/WelcomePage.vue';
 import LandingPage from './components/LandingPage.vue';
 import CreateGame from './components/CreateGame.vue';
 import JoinGame from './components/JoinGame.vue';
@@ -11,7 +12,8 @@ import GameChat from './components/GameChat.vue';
 const router = createRouter({
   history: createWebHistory(),
   routes: [
-    { path: '/', component: LandingPage },
+    { path: '/', component: WelcomePage },
+    { path: '/lobby', component: LandingPage },
     { path: '/game/:gameID/:setPlayer', component: GameLobby, props: true },
   ]
 })
