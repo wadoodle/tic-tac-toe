@@ -1,8 +1,7 @@
 <template>
-  <div>
+    <h3>New Game</h3>
     <button @click.prevent="newGame">Create New Game</button>
     <p v-if="createError" class="error-message">{{ createError }}</p>
-  </div>
 </template>
 
 
@@ -15,7 +14,6 @@ import {
 
 export default {
   props: ['playerName'],
-  inject: ['validateName'],
   data() {
     return {
       createError: null,
@@ -24,11 +22,6 @@ export default {
   created() {},
   methods: {
     newGame() {
-      let name = this.validateName();
-      if (!name) {
-        return false;
-      }
-
       //create new game data then navigate to game page
       const db = getDatabase();
       const gameID = this.generateID(25);
@@ -71,3 +64,17 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+h3 {
+  text-align: center;
+}
+
+button {
+  display: block;
+  margin: 25px auto;
+  background-color: #FCCB1E;
+  color: black;
+  border-radius: 17px;
+}
+</style>

@@ -4,10 +4,10 @@
     <form class="form-style">
       <div class="form-group">
         <label for="name-input">Enter a Nickname</label>
-        <input id="name-input" type="text" v-model="playerName" />
+        <input id="name-input" type="text" v-model="enteredName" />
+        <button @click.prevent="validateName">Start</button>
         <p v-if="nameError" class="error-message">{{ nameError }}</p>
-        <button @click.prevent="setPlayerName">Start</button>
-        </div>
+      </div>
     </form>
   </div>
 </template>
@@ -16,14 +16,22 @@
 export default {
   data() {
     return {
-      nameError: null,
-      playerName: "",
+      nameError: false,
+      enteredName: "",
     };
   },
   methods: {
+    validateName() {
+      //check if a name was entered
+      if (this.enteredName != "") {
+        this.nameError = false;
+        this.setPlayerName();
+      } else {
+        this.nameError = "Please enter a name.";
+      }
+    },
     setPlayerName() {
-      this.$emit("set-name", this.playerName);
-      this.playerName = "";
+      this.$emit("set-name", this.enteredName);
     },
   },
 };
@@ -34,15 +42,18 @@ export default {
   width: 800px;
 }
 
-h2 {
-  text-align: center;
-  color: #46cbb3;
-  font-size: 32px;
-  padding: 25px;
-}
-
 .form-style {
   display: flex;
   justify-content: center;
+}
+
+.form-style input {
+  width: 65%;
+}
+
+@media (min-width: 576px) {
+  .form-style input {
+    width: 300px;
+  }
 }
 </style>

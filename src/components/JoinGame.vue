@@ -7,12 +7,14 @@
     <p v-if="joinError" class="error-message">{{ joinError }}</p>
   </div-->
 
-  <div v-if="joinableGames">
+  <h3>Join Game</h3>
+
+  <div v-if="joinableGames" class="games-list">
     <template v-for="game in joinableGames" :key="game.gameID">
-      <div v-if="game.full === false">
+      <div v-if="game.full === false" class="game">
         <p>{{ game.player1 }}'s Lobby</p>
         <button @click.prevent="setLobbyID(game.gameID)">
-          Join Game
+          Join
         </button>
       </div>
     </template>
@@ -32,7 +34,6 @@ import {
 
 export default {
   props: ["playerName"],
-  inject: ["validateName"],
   data() {
     return {
       joinableGames: null,
@@ -53,11 +54,6 @@ export default {
       });
     },
     setLobbyID(gameID) {
-      let name = this.validateName();
-      if (!name) {
-        return false;
-      }
-
       this.gameID = gameID;
         this.joinGameByID();
     },
@@ -83,11 +79,6 @@ export default {
         return false;
       }
 
-      let name = this.validateName();
-      if (!name) {
-        return false;
-      }
-
       const dbRef = ref(getDatabase());
       get(child(dbRef, "games/" + this.gameID + "/full"))
         .then((snapshot) => {
@@ -109,3 +100,28 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+h3 {
+  text-align: center;
+}
+
+.games-list {
+  width: 350px;
+  max-width: 90%;
+  margin: 0 auto;
+}
+
+.game {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  width: 100%;
+}
+
+button {
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+}
+</style>

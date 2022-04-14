@@ -1,26 +1,24 @@
 <template>
   <h1>TIC-TAC-TOE</h1>
-  <router-view @set-name="setName"></router-view>
+  <router-view @set-name="setName" :player-name="playerName"></router-view>
 </template>
 
 
 <script>
 export default {
   data() {
-    return {};
+    return {
+      playerName: '',
+    };
   },
-  provide() {
-    return {};
-  },
-  created() {},
   methods: {
-    setName(message) {
-      console.log(message);
+    setName(enteredName) {
+      this.playerName = enteredName;
+      this.$router.push("/lobby");
     }
   },
 };
 </script>
-
 
 <style>
 * {
@@ -46,12 +44,19 @@ p {
 
 h1 {
   text-align: center;
-  font-size: 96px;
-  padding: 50px 0 100px 0;
+  font-size: 36px;
+  padding: 50px 0;
   font-family: 'Irish Grover', cursive;
   background: -webkit-linear-gradient(#F8F8F8, #FFFCF6, #FDEBAE);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+}
+
+h2 {
+  text-align: center;
+  color: #46cbb3;
+  font-size: 32px;
+  padding: 25px;
 }
 
 .container {
@@ -59,6 +64,7 @@ h1 {
   max-width: 90%;
   background: rgba(248, 248, 248, 0.85); 
   border-radius: 6px;
+  padding: 20px;
 }
 
 .center-text {
@@ -78,9 +84,14 @@ h1 {
 /* FORM STYLES */
 .form-style {
   margin: 10px auto;
-  max-width: 800px;
-  padding: 25px 10px 25px 10px;
+  width: 800px;
+  max-width: 95%;
+  padding: 25px 10px;
   font: 13px "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+}
+
+.form-group {
+  width: 100%;
 }
 
 .form-style li {
@@ -180,5 +191,23 @@ button:hover {
 
 .form-style .required {
   color: red;
+}
+
+
+/*Breakpoints*/
+@media (min-width: 576px) { 
+  h1 {
+    font-size: 48px;
+  }
+
+  .form-group {
+    width: auto;
+  }
+}
+
+@media (min-width: 768px) {
+  h1 {
+    font-size: 60px;
+  }
 }
 </style>
