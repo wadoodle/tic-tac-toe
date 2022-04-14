@@ -1,48 +1,57 @@
 <template>
-  <button id="leave-game" @click="leaveGame">X</button>
-  <h1>Game Lobby</h1>
-  <p>Game ID: {{ gameID }}</p>
-  <button v-if="!game || !game.full" @click="playAgainstTicTacBot">
-    Play against TicTac Bot
-  </button>
+  <div id="leave-game">
+    <img @click="leaveGame" src="../images/back-icon.png"><span>BACK TO LOBBY</span>
+  </div>
+  
+  <div class="container">
+    <h2>GAME LOBBY</h2>
+    <p>Game ID: {{ gameID }}</p>
+    <button v-if="!game || !game.full" @click="playAgainstTicTacBot">
+      Play against TicTac Bot
+    </button>
 
-  <template v-if="game">
-    <div id="score">
-      <div class="top">{{ game.player1 }} X's</div>
-      <div class="top right">
-        <span v-if="game.player2">{{ game.player2 }} O's</span>
+    <template v-if="game">
+      <div id="score">
+        <div class="top">{{ game.player1 }} X's</div>
+        <div class="top right">
+          <span v-if="game.player2">{{ game.player2 }} O's</span>
+        </div>
+        <div class="bottom">{{ game.wins.player1 }}</div>
+        <div class="bottom right">{{ game.wins.player2 }}</div>
       </div>
-      <div class="bottom">{{ game.wins.player1 }}</div>
-      <div class="bottom right">{{ game.wins.player2 }}</div>
-    </div>
 
-    <h3 class="center-text">{{ currentTurnName }}'s turn</h3>
+      <h3 class="center-text">{{ currentTurnName }}'s turn</h3>
 
-    <div id="game-board">
-      <div
-        v-for="(item, index) in game.boardState"
-        :id="'pos' + index"
-        :key="'pos' + index"
-        @click="makePlayerMove(index)"
-      >
-        {{ item }}
+      <div id="game-board">
+        <div
+          v-for="(item, index) in game.boardState"
+          :id="'pos' + index"
+          :key="'pos' + index"
+          @click="makePlayerMove(index)"
+        >
+          {{ item }}
+        </div>
       </div>
-    </div>
 
-    <template v-if="game.gameState !== 'In Progress'">
-      <h2>{{ game.gameState }}</h2>
-      <button
-        v-if="game.gameState !== 'In Progress'"
-        @click="newGame"
-        id="new-game-btn">
-        New Game
-      </button>
+      <template v-if="game.gameState !== 'In Progress'">
+        <h2>{{ game.gameState }}</h2>
+        <button
+          v-if="game.gameState !== 'In Progress'"
+          @click="newGame"
+          id="new-game-btn"
+        >
+          New Game
+        </button>
+      </template>
+
+      <p v-if="error" class="error-message">{{ error }}</p>
+
+      <game-chat
+        :chatLog="game.chatLog"
+        @send-message="sendMessage"
+      ></game-chat>
     </template>
-
-    <p v-if="error" class="error-message">{{ error }}</p>
-
-    <game-chat :chatLog="game.chatLog" @send-message="sendMessage"></game-chat>
-  </template>
+  </div>
 </template>
 
 <script>
@@ -82,9 +91,8 @@ export default {
   },
   methods: {
     sendMessage(message) {
-
       let sender;
-      if(this.player !== 'player1' && this.player !== 'player2') {
+      if (this.player !== "player1" && this.player !== "player2") {
         sender = this.playerName;
       } else {
         sender = this.player;
@@ -198,8 +206,8 @@ export default {
         return false;
       }
 
-      let winningSpace = this.checkBotWinningOrBlockingMove('winning');
-      let blockingSpace = this.checkBotWinningOrBlockingMove('blocking');
+      let winningSpace = this.checkBotWinningOrBlockingMove("winning");
+      let blockingSpace = this.checkBotWinningOrBlockingMove("blocking");
       let cornerSpace = this.checkBotCornerMove();
       let centerSpace = this.game.boardState[4] === "" ? true : false;
 
@@ -209,7 +217,7 @@ export default {
         this.game.boardState[blockingSpace] = "O";
       } else if (cornerSpace) {
         this.game.boardState[cornerSpace] = "O";
-      } else if(centerSpace) {
+      } else if (centerSpace) {
         this.game.boardState[4] = "O";
       } else {
         //makes move in random empty space
@@ -226,13 +234,12 @@ export default {
       }
 
       this.handleMove(true);
-
     },
     checkBotWinningOrBlockingMove(moveType) {
       let checkFor;
-      if(moveType === 'winning') {
+      if (moveType === "winning") {
         checkFor = "O";
-      } else if(moveType === 'blocking') {
+      } else if (moveType === "blocking") {
         checkFor = "X";
       }
 
@@ -304,7 +311,6 @@ export default {
 
       updates["games/" + this.gameID + "/boardState"] = this.game.boardState;
       updates["games/" + this.gameID + "/currentTurn"] = "player1";
-      
 
       update(ref(db), updates);
     },
@@ -409,11 +415,21 @@ export default {
 
 <style scoped>
 #leave-game {
-  display: block;
-  margin: 25px 25px 25px auto;
-  width: 20px;
-  border: none;
-  padding: 5px 6px;
+  width: 90%;
+  margin: 25px auto;
+  display: flex;
+  align-items: center;
+}
+
+#leave-game img {
+  height: 24px;
+  width: 24px;
+}
+
+#leave-game span {
+  color: white;
+  margin-left: 10px;
+  font-size: 24px;
 }
 
 #leave-game:hover {

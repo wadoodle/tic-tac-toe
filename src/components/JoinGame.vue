@@ -13,9 +13,7 @@
     <template v-for="game in joinableGames" :key="game.gameID">
       <div v-if="game.full === false" class="game">
         <p>{{ game.player1 }}'s Lobby</p>
-        <button @click.prevent="setLobbyID(game.gameID)">
-          Join
-        </button>
+        <button @click.prevent="setLobbyID(game.gameID)">Join</button>
       </div>
     </template>
   </div>
@@ -55,13 +53,15 @@ export default {
     },
     setLobbyID(gameID) {
       this.gameID = gameID;
-        this.joinGameByID();
+      this.joinGameByID();
     },
     joinGameByID() {
       const db = getDatabase();
       const updates = {};
       updates["games/" + this.gameID + "/player2"] = this.playerName;
       updates["games/" + this.gameID + "/full"] = true;
+
+      console.log(updates);
 
       update(ref(db), updates)
         .then(() => {

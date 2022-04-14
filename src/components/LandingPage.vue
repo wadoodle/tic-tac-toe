@@ -13,7 +13,7 @@
 
     <div class="layout">
       <div class="layout-item">
-        <join-game></join-game>
+        <join-game :player-name="playerName"></join-game>
       </div>
       <div class="layout-item">
         <create-game :player-name="playerName"></create-game>
