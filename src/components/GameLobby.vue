@@ -3,7 +3,10 @@
     <div id="leave-game" @click="leaveGame">
       <img src="../images/back-icon.png" /><span>BACK TO LOBBY</span>
     </div>
-    <p>Game ID: {{ gameID }}</p>
+
+    <div id="game-code" :data-code="gameID" @click="copyGameCode">
+      <span>Copy game code </span><img src="../images/clipboard-icon.png" />
+    </div>
   </section>
 
   <div v-if="game" class="wrap">
@@ -25,9 +28,7 @@
       <h2>GAME</h2>
       <template v-if="!game || !game.full">
         <p>Waiting for a player to join...</p>
-        <button
-          @click="playAgainstTicTacBot"
-          class="yellow-button">
+        <button @click="playAgainstTicTacBot" class="yellow-button">
           Play TacBot
         </button>
       </template>
@@ -404,6 +405,10 @@ export default {
         update(ref(db), updates).then(this.$router.push("/lobby"));
       }
     },
+    copyGameCode() {
+      let code = document.getElementById('game-code').getAttribute('data-code');
+      navigator.clipboard.writeText(code);
+    },
     playAgainstTicTacBot() {
       const db = getDatabase();
       const updates = {};
@@ -436,41 +441,51 @@ export default {
 #top {
   display: flex;
   justify-content: space-between;
-  width: 90%;
-  margin: 25px auto;
+  width: 1000px;
+  max-width: 90%;
+  margin: 15px auto;
 }
 
-#leave-game {
+#leave-game,
+#game-code {
   display: flex;
   align-items: center;
 }
 
-#leave-game img {
+#leave-game img,
+#game-code img {
   height: 24px;
   width: 24px;
 }
 
-#leave-game span {
+#leave-game span,
+#game-code span {
   color: white;
-  margin-left: 10px;
-  font-size: 24px;
 }
 
-#leave-game:hover {
+#leave-game span {
+  font-size: 24px;
+  margin-left: 10px;
+}
+
+#game-code span {
+  font-size: 16px;
+  margin-right: 10px;
+}
+
+#leave-game:hover,
+#game-code:hover {
   cursor: pointer;
 }
 
 #board {
   grid-area: board;
+  font-family: 'Risque', cursive;
 }
 
 #game {
   grid-area: game;
   text-align: center;
-}
-
-#game p {
-  margin-bottom: 10px;
 }
 
 #stats {
@@ -486,12 +501,15 @@ export default {
 #stats,
 #chat {
   margin: 0 auto;
-  width: 90%;
+  width: 100%;
   background: rgba(248, 248, 248, 0.85);
   border-radius: 6px;
+  padding-bottom: 15px;
 }
 
 .wrap {
+  width: 1000px;
+  max-width: 90%;
   margin: 0 auto;
   display: grid;
   grid-template-columns: 100%;
@@ -501,16 +519,31 @@ export default {
     "stats"
     "board"
     "chat";
-  row-gap: 20px;
+  grid-gap: 20px;
 }
 
 @media (min-width: 768px) {
   .wrap {
-    grid-template-columns: 66% 33%;
+    grid-template-columns: 2fr 1fr;
     grid-template-areas:
       "board game"
       "board stats"
-      "board chat";
+      "chat chat";
+  }
+}
+
+@media (min-width: 992px) {
+  .wrap {
+    grid-template-columns: 2fr 1fr;
+    grid-template-areas:
+      "board game"
+      "board stats"
+      "chat .";
+
+    /*grid-template-areas:
+      "board game"
+      "board stats"
+      "board chat";*/
   }
 }
 
@@ -524,12 +557,12 @@ h2 {
 }
 
 #score {
-  margin: 0 auto 20px auto;
-    width: 90%;
-    height: 75px;
-    display: grid;
-    grid-template-columns: 50% 50%;
-    grid-template-rows: 50% 50%;
+  margin: 0 auto;
+  width: 90%;
+  height: 75px;
+  display: grid;
+  grid-template-columns: 50% 50%;
+  grid-template-rows: 50% 50%;
 }
 
 #score div {

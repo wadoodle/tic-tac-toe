@@ -8,14 +8,14 @@
 export default {
   data() {
     return {
-      playerName: '',
+      playerName: "",
     };
   },
   methods: {
     setName(enteredName) {
       this.playerName = enteredName;
       this.$router.push("/lobby");
-    }
+    },
   },
 };
 </script>
@@ -33,8 +33,9 @@ html {
 }
 
 body {
-  background-image: linear-gradient(#50A5B8, #46CBB3);
+  background-image: linear-gradient(#50a5b8, #46cbb3);
   background-repeat: no-repeat;
+  background-attachment: fixed;
 }
 
 body,
@@ -45,9 +46,10 @@ p {
 h1 {
   text-align: center;
   font-size: 36px;
-  padding: 30px 0;
-  font-family: 'Irish Grover', cursive;
-  background: -webkit-linear-gradient(#F8F8F8, #FFFCF6, #FDEBAE);
+  padding: 20px 0;
+  font-family: "Irish Grover", cursive;
+  background: -webkit-linear-gradient(#f8f8f8, #fffcf6, #fdebae);
+  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -62,7 +64,7 @@ h2 {
 .container {
   margin: 0 auto;
   max-width: 90%;
-  background: rgba(248, 248, 248, 0.85); 
+  background: rgba(248, 248, 248, 0.85);
   border-radius: 6px;
   padding: 20px;
 }
@@ -80,13 +82,13 @@ h2 {
 .yellow-button {
   display: block;
   margin: 15px auto;
-  background-color: #FCCB1E;
+  background-color: #fccb1e;
   color: black;
   border-radius: 17px;
 }
 
 .yellow-button:hover {
-  background-color: #EFBE11;
+  background-color: #efbe11;
 }
 
 .error-message {
@@ -161,7 +163,6 @@ select {
 .form-style input[type="email"]:focus,
 .form-style textarea:focus,
 .form-style select:focus {
-  
 }
 
 .form-style .field-divided {
@@ -190,7 +191,7 @@ button {
 }
 
 button:hover {
-  background: #2DB29A;
+  background: #2db29a;
   box-shadow: none;
   -moz-box-shadow: none;
   -webkit-box-shadow: none;
@@ -205,9 +206,8 @@ button:hover {
   color: red;
 }
 
-
 /*Breakpoints*/
-@media (min-width: 576px) { 
+@media (min-width: 576px) {
   h1 {
     font-size: 48px;
   }

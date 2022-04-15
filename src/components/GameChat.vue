@@ -1,9 +1,14 @@
 <template>
-  <section id="chat">
+  <section id="chat-wrap">
     <div id="chat-log">
-      <p v-for="entry in chatLog" :key="entry">
-        <strong>{{ entry.Sender }}:</strong> {{ entry.Message }}
-      </p>
+      <template v-for="entry in chatLog" :key="entry">
+        <p class="sender">
+          <strong>{{ entry.Sender }}</strong>
+        </p>
+        <p class="message">
+          {{ entry.Message }}
+        </p>
+      </template>
     </div>
     <form id="new-message-con">
       <input type="text" v-model="newMessage" />
@@ -28,9 +33,9 @@ export default {
       setTimeout(function () {
         let chatWindow = document.getElementById("chat-log");
         //prevents this from triggering when leaving a game
-        if(chatWindow) {
+        if (chatWindow) {
           chatWindow.scrollTop = chatWindow.scrollHeight;
-        }   
+        }
       }, 100);
     },
   },
@@ -44,7 +49,7 @@ export default {
 </script>
 
 <style scoped>
-#chat {
+#chat-wrap {
   width: 600px;
   max-width: 90%;
   margin: 0 auto;
@@ -55,12 +60,23 @@ export default {
   overflow-y: scroll;
 }
 
-#chat-log p {
+::-webkit-scrollbar {
+    width: 0;
+}
+
+#chat-wrap p {
   padding: 1px 0;
+  font-size: 12px;
+}
+
+#chat-wrap .sender {
+  color: #46cbb3;
+  margin-top: 5px;
 }
 
 #new-message-con {
   display: flex;
+  margin-top: 5px;
 }
 
 #new-message-con input {
