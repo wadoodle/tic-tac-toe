@@ -45,7 +45,7 @@ p {
 h1 {
   text-align: center;
   font-size: 36px;
-  padding: 50px 0;
+  padding: 30px 0;
   font-family: 'Irish Grover', cursive;
   background: -webkit-linear-gradient(#F8F8F8, #FFFCF6, #FDEBAE);
   -webkit-background-clip: text;
@@ -56,7 +56,7 @@ h2 {
   text-align: center;
   color: #46cbb3;
   font-size: 32px;
-  padding: 25px;
+  padding: 15px;
 }
 
 .container {
@@ -75,6 +75,18 @@ h2 {
   width: 90%;
   max-width: 1200px;
   margin: 0 auto;
+}
+
+.yellow-button {
+  display: block;
+  margin: 15px auto;
+  background-color: #FCCB1E;
+  color: black;
+  border-radius: 17px;
+}
+
+.yellow-button:hover {
+  background-color: #EFBE11;
 }
 
 .error-message {

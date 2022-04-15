@@ -7,7 +7,6 @@
         <label for="name-input">Have a Code?</label>
         <input id="name-input" type="text" v-model="gameCode" />
         <button @click.prevent="validateGame">Join</button>
-        <p v-if="nameError" class="error-message">{{ nameError }}</p>
       </div>
     </form>
 

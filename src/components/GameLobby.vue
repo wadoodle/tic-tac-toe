@@ -1,27 +1,14 @@
 <template>
-  <div id="leave-game">
-    <img @click="leaveGame" src="../images/back-icon.png"><span>BACK TO LOBBY</span>
-  </div>
-  
-  <div class="container">
-    <h2>GAME LOBBY</h2>
+  <section id="top">
+    <div id="leave-game" @click="leaveGame">
+      <img src="../images/back-icon.png" /><span>BACK TO LOBBY</span>
+    </div>
     <p>Game ID: {{ gameID }}</p>
-    <button v-if="!game || !game.full" @click="playAgainstTicTacBot">
-      Play against TicTac Bot
-    </button>
+  </section>
 
-    <template v-if="game">
-      <div id="score">
-        <div class="top">{{ game.player1 }} X's</div>
-        <div class="top right">
-          <span v-if="game.player2">{{ game.player2 }} O's</span>
-        </div>
-        <div class="bottom">{{ game.wins.player1 }}</div>
-        <div class="bottom right">{{ game.wins.player2 }}</div>
-      </div>
-
-      <h3 class="center-text">{{ currentTurnName }}'s turn</h3>
-
+  <div v-if="game" class="wrap">
+    <div id="board">
+      <h2>GAME BOARD</h2>
       <div id="game-board">
         <div
           v-for="(item, index) in game.boardState"
@@ -32,7 +19,44 @@
           {{ item }}
         </div>
       </div>
+    </div>
 
+    <div id="game">
+      <h2>GAME</h2>
+      <template v-if="!game || !game.full">
+        <p>Waiting for a player to join...</p>
+        <button
+          @click="playAgainstTicTacBot"
+          class="yellow-button">
+          Play TacBot
+        </button>
+      </template>
+      <template v-else>
+        <p class="center-text">{{ currentTurnName }}'s turn</p>
+      </template>
+    </div>
+
+    <div id="stats">
+      <h2>STATS</h2>
+      <div id="score">
+        <div class="top">{{ game.player1 }} X's</div>
+        <div class="top right">
+          <span v-if="game.player2">{{ game.player2 }} O's</span>
+        </div>
+        <div class="bottom">{{ game.wins.player1 }}</div>
+        <div class="bottom right">{{ game.wins.player2 }}</div>
+      </div>
+    </div>
+
+    <div id="chat">
+      <h2>CHAT</h2>
+      <game-chat
+        :chatLog="game.chatLog"
+        @send-message="sendMessage"
+      ></game-chat>
+    </div>
+
+    <template v-if="game">
       <template v-if="game.gameState !== 'In Progress'">
         <h2>{{ game.gameState }}</h2>
         <button
@@ -45,11 +69,6 @@
       </template>
 
       <p v-if="error" class="error-message">{{ error }}</p>
-
-      <game-chat
-        :chatLog="game.chatLog"
-        @send-message="sendMessage"
-      ></game-chat>
     </template>
   </div>
 </template>
@@ -382,7 +401,7 @@ export default {
           player1: 0,
           player2: 0,
         };
-        update(ref(db), updates).then(this.$router.push("/"));
+        update(ref(db), updates).then(this.$router.push("/lobby"));
       }
     },
     playAgainstTicTacBot() {
@@ -414,9 +433,14 @@ export default {
 </script>
 
 <style scoped>
-#leave-game {
+#top {
+  display: flex;
+  justify-content: space-between;
   width: 90%;
   margin: 25px auto;
+}
+
+#leave-game {
   display: flex;
   align-items: center;
 }
@@ -436,6 +460,60 @@ export default {
   cursor: pointer;
 }
 
+#board {
+  grid-area: board;
+}
+
+#game {
+  grid-area: game;
+  text-align: center;
+}
+
+#game p {
+  margin-bottom: 10px;
+}
+
+#stats {
+  grid-area: stats;
+}
+
+#chat {
+  grid-area: chat;
+}
+
+#board,
+#game,
+#stats,
+#chat {
+  margin: 0 auto;
+  width: 90%;
+  background: rgba(248, 248, 248, 0.85);
+  border-radius: 6px;
+}
+
+.wrap {
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 100%;
+  grid-template-rows: auto;
+  grid-template-areas:
+    "game"
+    "stats"
+    "board"
+    "chat";
+  row-gap: 20px;
+}
+
+@media (min-width: 768px) {
+  .wrap {
+    grid-template-columns: 66% 33%;
+    grid-template-areas:
+      "board game"
+      "board stats"
+      "board chat";
+  }
+}
+
 #new-game-btn {
   display: block;
   margin: 0 auto;
@@ -446,11 +524,12 @@ h2 {
 }
 
 #score {
-  margin: 0 auto 50px auto;
-  width: 300px;
-  display: grid;
-  grid-template-columns: 150px 150px;
-  grid-template-rows: 50px 50px;
+  margin: 0 auto 20px auto;
+    width: 90%;
+    height: 75px;
+    display: grid;
+    grid-template-columns: 50% 50%;
+    grid-template-rows: 50% 50%;
 }
 
 #score div {

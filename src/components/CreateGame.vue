@@ -1,6 +1,6 @@
 <template>
     <h3>New Game</h3>
-    <button @click.prevent="newGame">Create New Game</button>
+    <button @click.prevent="newGame" class="yellow-button">Create New Game</button>
     <p v-if="createError" class="error-message">{{ createError }}</p>
 </template>
 
@@ -68,13 +68,5 @@ export default {
 <style scoped>
 h3 {
   text-align: center;
-}
-
-button {
-  display: block;
-  margin: 25px auto;
-  background-color: #FCCB1E;
-  color: black;
-  border-radius: 17px;
 }
 </style>
