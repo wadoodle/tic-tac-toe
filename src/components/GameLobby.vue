@@ -12,6 +12,7 @@
   <div v-if="game" class="wrap">
     <div id="board">
       <h2>GAME BOARD</h2>
+      <p v-if="error" class="error-message">{{ error }}</p>
       <div id="game-board">
         <div
           v-for="(item, index) in game.boardState"
@@ -32,8 +33,16 @@
           Play TacBot
         </button>
       </template>
-      <template v-else>
+
+      <template v-else-if="game.gameState === 'In Progress'">
         <p class="center-text">{{ currentTurnName }}'s turn</p>
+      </template>
+
+      <template v-if="game.gameState !== 'In Progress'">
+        <h3>{{ game.gameState }}</h3>
+        <button class="yellow-button" @click="newGame">
+          New Game
+        </button>
       </template>
     </div>
 
@@ -57,20 +66,6 @@
       ></game-chat>
     </div>
 
-    <template v-if="game">
-      <template v-if="game.gameState !== 'In Progress'">
-        <h2>{{ game.gameState }}</h2>
-        <button
-          v-if="game.gameState !== 'In Progress'"
-          @click="newGame"
-          id="new-game-btn"
-        >
-          New Game
-        </button>
-      </template>
-
-      <p v-if="error" class="error-message">{{ error }}</p>
-    </template>
   </div>
 </template>
 
@@ -111,15 +106,8 @@ export default {
   },
   methods: {
     sendMessage(message) {
-      let sender;
-      if (this.player !== "player1" && this.player !== "player2") {
-        sender = this.playerName;
-      } else {
-        sender = this.player;
-      }
-
       let newMessage = {
-        Sender: sender,
+        Sender: this.playerName,
         Message: message,
       };
 
@@ -375,7 +363,7 @@ export default {
         this.ticTacBot === true
       ) {
         updates["games/" + this.gameID] = null;
-        update(ref(db), updates).then(this.$router.push("/"));
+        update(ref(db), updates).then(this.$router.push("/lobby"));
       } else {
         //reset game state
         const remainingPlayer =
@@ -406,7 +394,7 @@ export default {
       }
     },
     copyGameCode() {
-      let code = document.getElementById('game-code').getAttribute('data-code');
+      let code = document.getElementById("game-code").getAttribute("data-code");
       navigator.clipboard.writeText(code);
     },
     playAgainstTicTacBot() {
@@ -480,7 +468,6 @@ export default {
 
 #board {
   grid-area: board;
-  font-family: 'Risque', cursive;
 }
 
 #game {
@@ -580,6 +567,7 @@ h2 {
 }
 
 #game-board {
+  font-family: "Risque", cursive;
   margin: 25px auto;
   width: 300px;
   display: grid;

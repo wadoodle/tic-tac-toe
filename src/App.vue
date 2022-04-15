@@ -36,6 +36,7 @@ body {
   background-image: linear-gradient(#50a5b8, #46cbb3);
   background-repeat: no-repeat;
   background-attachment: fixed;
+  padding-bottom: 20px;
 }
 
 body,
@@ -44,17 +45,20 @@ p {
 }
 
 h1 {
+  font-family: "Irish Grover", cursive;
   text-align: center;
   font-size: 36px;
   padding: 20px 0;
-  font-family: "Irish Grover", cursive;
-  background: -webkit-linear-gradient(#f8f8f8, #fffcf6, #fdebae);
+  background: linear-gradient(180deg, #F8F8F8 0%, #FFFCF7 27.6%, #FDEBAE 100%);
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 h2 {
+  font-family: "Koulen", cursive;
+  font-weight: normal;
   text-align: center;
   color: #46cbb3;
   font-size: 32px;
@@ -93,6 +97,7 @@ h2 {
 
 .error-message {
   color: red;
+  text-align: center;
 }
 
 /* FORM STYLES */

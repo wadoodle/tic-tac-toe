@@ -26,8 +26,6 @@ import {
   ref,
   onValue,
   update,
-  get,
-  child,
 } from "firebase/database";
 
 export default {
@@ -70,31 +68,6 @@ export default {
         .catch((error) => {
           console.log("error");
           alert(error);
-        });
-    },
-    checkGameValidity() {
-      //check game id was entered
-      if (this.gameID === "") {
-        this.joinError = "Please enter a game ID.";
-        return false;
-      }
-
-      const dbRef = ref(getDatabase());
-      get(child(dbRef, "games/" + this.gameID + "/full"))
-        .then((snapshot) => {
-          const full = snapshot.val();
-
-          //join game if it exists and is not full
-          if (full === null) {
-            this.joinError = "Please enter a valid game ID";
-          } else if (full != true) {
-            this.joinGameByID();
-          } else {
-            this.joinError = "Game is full.";
-          }
-        })
-        .catch((error) => {
-          console.error(error);
         });
     },
   },

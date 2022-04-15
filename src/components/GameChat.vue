@@ -56,7 +56,7 @@ export default {
 }
 
 #chat-log {
-  height: 120px;
+  height: 138px;
   overflow-y: scroll;
 }
 
