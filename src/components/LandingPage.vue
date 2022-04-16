@@ -13,7 +13,7 @@
 
     <div class="layout">
       <div class="layout-item">
-        <join-game :player-name="playerName"></join-game>
+        <join-game :player-name="playerName" @join-game="setGameID"></join-game>
       </div>
       <div class="layout-item">
         <create-game :player-name="playerName"></create-game>
@@ -23,13 +23,7 @@
 </template>
 
 <script>
-import {
-  getDatabase,
-  ref,
-  get,
-  child,
-  update,
-} from "firebase/database";
+import { getDatabase, ref, get, child, update } from "firebase/database";
 
 export default {
   props: ["playerName"],
@@ -40,8 +34,7 @@ export default {
       joinError: null,
     };
   },
-  created() {
-  },
+  created() {},
   methods: {
     validateGame() {
       //check game id was entered
@@ -69,13 +62,15 @@ export default {
           console.error(error);
         });
     },
+    setGameID(gameID) {
+      this.gameID = gameID;
+      this.joinGameByID();
+    },
     joinGameByID() {
       const db = getDatabase();
       const updates = {};
       updates["games/" + this.gameID + "/player2"] = this.playerName;
       updates["games/" + this.gameID + "/full"] = true;
-
-      console.log(updates);
 
       update(ref(db), updates)
         .then(() => {

@@ -13,7 +13,7 @@
     <template v-for="game in joinableGames" :key="game.gameID">
       <div v-if="game.full === false" class="game">
         <p>{{ game.player1 }}'s Lobby</p>
-        <button @click.prevent="setLobbyID(game.gameID)">Join</button>
+        <button @click.prevent="joinGame(game.gameID)">Join</button>
       </div>
     </template>
   </div>
@@ -25,11 +25,11 @@ import {
   getDatabase,
   ref,
   onValue,
-  update,
 } from "firebase/database";
 
 export default {
   props: ["playerName"],
+  emits: ["join-game"],
   data() {
     return {
       joinableGames: null,
@@ -49,26 +49,8 @@ export default {
         this.joinableGames = data;
       });
     },
-    setLobbyID(gameID) {
-      this.gameID = gameID;
-      this.joinGameByID();
-    },
-    joinGameByID() {
-      const db = getDatabase();
-      const updates = {};
-      updates["games/" + this.gameID + "/player2"] = this.playerName;
-      updates["games/" + this.gameID + "/full"] = true;
-
-      console.log(updates);
-
-      update(ref(db), updates)
-        .then(() => {
-          this.$router.push("/game/" + this.gameID + "/player2");
-        })
-        .catch((error) => {
-          console.log("error");
-          alert(error);
-        });
+    joinGame(gameID) {
+      this.$emit("join-game", gameID);
     },
   },
 };
