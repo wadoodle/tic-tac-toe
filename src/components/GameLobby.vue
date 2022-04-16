@@ -76,6 +76,15 @@
 import { getDatabase, ref, onValue, update } from "firebase/database";
 
 export default {
+  beforeRouteEnter(to, from, next) {
+    next((vm) => {
+      if(!vm.playerName) {
+        vm.$router.push("/");
+      } else {
+        console.log('yessir');
+      }
+    });
+  },
   props: ["gameID", "setPlayer"],
   data() {
     return {

@@ -26,6 +26,15 @@
 import { getDatabase, ref, get, child, update } from "firebase/database";
 
 export default {
+  beforeRouteEnter(to, from, next) {
+    next((vm) => {
+      if(!vm.playerName) {
+        vm.$router.push("/");
+      } else {
+        console.log('yessir');
+      }
+    });
+  },
   props: ["playerName"],
   data() {
     return {
