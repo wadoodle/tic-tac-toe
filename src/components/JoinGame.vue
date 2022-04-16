@@ -21,11 +21,7 @@
 
 
 <script>
-import {
-  getDatabase,
-  ref,
-  onValue,
-} from "firebase/database";
+import { getDatabase, ref, onValue } from "firebase/database";
 
 export default {
   props: ["playerName"],

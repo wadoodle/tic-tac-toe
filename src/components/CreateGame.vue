@@ -1,19 +1,17 @@
 <template>
-    <h3>New Game</h3>
-    <button @click.prevent="newGame" class="yellow-button">Create New Game</button>
-    <p v-if="createError" class="error-message">{{ createError }}</p>
+  <h3>New Game</h3>
+  <button @click.prevent="newGame" class="yellow-button">
+    Create New Game
+  </button>
+  <p v-if="createError" class="error-message">{{ createError }}</p>
 </template>
 
 
 <script>
-import {
-  getDatabase,
-  set,
-  ref,
-} from "firebase/database";
+import { getDatabase, set, ref } from "firebase/database";
 
 export default {
-  props: ['playerName'],
+  props: ["playerName"],
   data() {
     return {
       createError: null,
@@ -38,17 +36,17 @@ export default {
         },
         chatLog: [
           {
-            Sender: 'System',
-            Message: 'Welcome to the Game!',
-          }
+            Sender: "System",
+            Message: "Welcome to the Game!",
+          },
         ],
       })
-      .then(() => {
-        this.$router.push("/game/" + gameID + "/player1");
-      })
-      .catch((error) => {
-        this.createError = error;
-      });
+        .then(() => {
+          this.$router.push("/game/" + gameID + "/player1");
+        })
+        .catch((error) => {
+          this.createError = error;
+        });
     },
     generateID(length) {
       const characters =

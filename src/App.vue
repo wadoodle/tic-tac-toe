@@ -49,7 +49,7 @@ h1 {
   text-align: center;
   font-size: 36px;
   padding: 20px 0;
-  background: linear-gradient(180deg, #F8F8F8 0%, #FFFCF7 27.6%, #FDEBAE 100%);
+  background: linear-gradient(180deg, #f8f8f8 0%, #fffcf7 27.6%, #fdebae 100%);
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;

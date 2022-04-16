@@ -78,10 +78,8 @@ import { getDatabase, ref, onValue, update } from "firebase/database";
 export default {
   beforeRouteEnter(to, from, next) {
     next((vm) => {
-      if(!vm.playerName) {
+      if (!vm.playerName) {
         vm.$router.push("/");
-      } else {
-        console.log('yessir');
       }
     });
   },
@@ -413,11 +411,10 @@ export default {
       navigator.clipboard.writeText(code);
 
       //show feedback to user
-      codeContainer.classList.add('copied');
-      setTimeout(function() {
-        codeContainer.classList.remove('copied');
-      }, 200)
-      
+      codeContainer.classList.add("copied");
+      setTimeout(function () {
+        codeContainer.classList.remove("copied");
+      }, 200);
     },
     playAgainstTicTacBot() {
       const db = getDatabase();

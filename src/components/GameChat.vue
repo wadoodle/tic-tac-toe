@@ -61,7 +61,7 @@ export default {
 }
 
 ::-webkit-scrollbar {
-    width: 0;
+  width: 0;
 }
 
 #chat-wrap p {
