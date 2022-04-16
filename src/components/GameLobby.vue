@@ -397,8 +397,18 @@ export default {
       }
     },
     copyGameCode() {
-      let code = document.getElementById("game-code").getAttribute("data-code");
+      let codeContainer = document.getElementById("game-code");
+
+      //copy the code to clipboard
+      let code = codeContainer.getAttribute("data-code");
       navigator.clipboard.writeText(code);
+
+      //show feedback to user
+      codeContainer.classList.add('copied');
+      setTimeout(function() {
+        codeContainer.classList.remove('copied');
+      }, 200)
+      
     },
     playAgainstTicTacBot() {
       const db = getDatabase();
@@ -441,6 +451,7 @@ export default {
 #game-code {
   display: flex;
   align-items: center;
+  transition: 0.2s;
 }
 
 #leave-game img,
@@ -479,6 +490,10 @@ export default {
 #leave-game:hover,
 #game-code:hover {
   cursor: pointer;
+}
+
+#game-code.copied {
+  transform: translateY(-0.5em);
 }
 
 #board {
