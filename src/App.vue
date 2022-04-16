@@ -77,12 +77,6 @@ h2 {
   text-align: center;
 }
 
-#game-board {
-  width: 90%;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
 .yellow-button {
   display: block;
   margin: 15px auto;

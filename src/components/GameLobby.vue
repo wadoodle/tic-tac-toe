@@ -1,7 +1,7 @@
 <template>
   <section id="top">
     <div id="leave-game" @click="leaveGame">
-      <img src="../images/back-icon.png" /><span>BACK TO LOBBY</span>
+      <img src="../images/back-icon.png" /><span>Back to lobby</span>
     </div>
 
     <div id="game-code" :data-code="gameID" @click="copyGameCode">
@@ -40,21 +40,25 @@
 
       <template v-if="game.gameState !== 'In Progress'">
         <h3>{{ game.gameState }}</h3>
-        <button class="yellow-button" @click="newGame">
-          New Game
-        </button>
+        <button class="yellow-button" @click="newGame">New Game</button>
       </template>
     </div>
 
     <div id="stats">
       <h2>STATS</h2>
       <div id="score">
-        <div class="top">{{ game.player1 }} X's</div>
+        <div class="top">{{ game.player1 }}'s Wins<br />(X)</div>
         <div class="top right">
-          <span v-if="game.player2">{{ game.player2 }} O's</span>
+          <template v-if="game.player2"
+            >{{ game.player2 }}'s Wins<br />(O)</template
+          >
         </div>
-        <div class="bottom">{{ game.wins.player1 }}</div>
-        <div class="bottom right">{{ game.wins.player2 }}</div>
+        <div class="bottom">
+          <span>{{ game.wins.player1 }}</span>
+        </div>
+        <div class="bottom right">
+          <span>{{ game.wins.player2 }}</span>
+        </div>
       </div>
     </div>
 
@@ -65,7 +69,6 @@
         @send-message="sendMessage"
       ></game-chat>
     </div>
-
   </div>
 </template>
 
@@ -452,13 +455,25 @@ export default {
 }
 
 #leave-game span {
-  font-size: 24px;
-  margin-left: 10px;
+  font-size: 12px;
+  margin-left: 5px;
 }
 
 #game-code span {
-  font-size: 16px;
-  margin-right: 10px;
+  font-size: 12px;
+  margin-right: 5px;
+}
+
+@media (min-width: 576px) {
+  #leave-game span {
+    font-size: 24px;
+    margin-left: 10px;
+  }
+
+  #game-code span {
+    font-size: 16px;
+    margin-right: 10px;
+  }
 }
 
 #leave-game:hover,
@@ -526,11 +541,6 @@ export default {
       "board game"
       "board stats"
       "chat .";
-
-    /*grid-template-areas:
-      "board game"
-      "board stats"
-      "board chat";*/
   }
 }
 
@@ -546,10 +556,10 @@ h2 {
 #score {
   margin: 0 auto;
   width: 90%;
-  height: 75px;
+  text-align: center;
   display: grid;
-  grid-template-columns: 50% 50%;
-  grid-template-rows: 50% 50%;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
 }
 
 #score div {
@@ -558,21 +568,29 @@ h2 {
   align-items: center;
 }
 
-#score .top {
-  border-bottom: 2px solid black;
+#score .bottom {
+  font-family: "Risque", cursive;
+  color: white;
 }
 
-#score .right {
-  border-left: 2px solid black;
+#score span {
+  background: #46cbb3;
+  width: 60px;
+  height: 60px;
+  border-radius: 30px;
+  line-height: 60px;
+  font-size: 48px;
 }
 
 #game-board {
+  width: 240px;
+  height: 240px;
+  max-width: 90%;
   font-family: "Risque", cursive;
   margin: 25px auto;
-  width: 300px;
   display: grid;
-  grid-template-columns: 100px 100px 100px;
-  grid-template-rows: 100px 100px 100px;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr;
 }
 
 #game-board div {
@@ -582,6 +600,13 @@ h2 {
   align-items: center;
   font-size: 48px;
   font-weight: bold;
+}
+
+@media (min-width: 576px) {
+  #game-board {
+    width: 300px;
+    height: 300px;
+  }
 }
 
 #pos1,
