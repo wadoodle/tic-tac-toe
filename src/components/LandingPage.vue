@@ -13,10 +13,10 @@
 
     <div class="layout">
       <div class="layout-item">
-        <join-game :player-name="playerName" @join-game="setGameID"></join-game>
+        <join-game @join-game="setGameID"></join-game>
       </div>
       <div class="layout-item">
-        <create-game :player-name="playerName"></create-game>
+        <create-game></create-game>
       </div>
     </div>
   </div>
@@ -27,10 +27,12 @@ import { state } from "../globalState.js";
 import { getDatabase, ref, get, child, update } from "firebase/database";
 
 export default {
-  beforeRouteEnter() {
-    if (!state.playerName) {
-      this.$router.push("/");
-    }
+  beforeRouteEnter(to, from, next) {
+    next((vm) => {
+      if (!state.playerName) {
+        vm.$router.push("/");
+      }
+    });
   },
   props: ["playerName"],
   data() {
@@ -41,7 +43,6 @@ export default {
       joinError: null,
     };
   },
-  created() {},
   methods: {
     validateGame() {
       //check game id was entered
@@ -81,7 +82,7 @@ export default {
 
       update(ref(db), updates)
         .then(() => {
-          state.player = 'player2';
+          state.player = "player2";
           this.$router.push("/game");
         })
         .catch((error) => {

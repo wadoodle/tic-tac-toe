@@ -4,7 +4,7 @@
       <img src="../images/back-icon.png" /><span>Back to lobby</span>
     </div>
 
-    <div id="game-code" :data-code="gameID" @click="copyGameCode">
+    <div id="game-code" @click="copyGameCode">
       <span>Copy game code </span><img src="../images/clipboard-icon.png" />
     </div>
   </section>
@@ -47,17 +47,21 @@
     <div id="stats">
       <h2>STATS</h2>
       <div id="score">
-        <div class="top">{{ game.player1 }}'s Wins<br />(X)</div>
+        <div class="top">
+          <template v-if="game.player1"
+            >{{ game.player1 }}'s Wins<br />(X)</template
+          >
+        </div>
         <div class="top right">
           <template v-if="game.player2"
             >{{ game.player2 }}'s Wins<br />(O)</template
           >
         </div>
         <div class="bottom">
-          <span>{{ game.wins.player1 }}</span>
+          <span v-if="game">{{ game.wins.player1 }}</span>
         </div>
         <div class="bottom right">
-          <span>{{ game.wins.player2 }}</span>
+          <span v-if="game">{{ game.wins.player2 }}</span>
         </div>
       </div>
     </div>
@@ -77,10 +81,12 @@ import { state } from "../globalState.js";
 import { getDatabase, ref, onValue, update } from "firebase/database";
 
 export default {
-  beforeRouteEnter() {
-    if (!state.playerName) {
-      this.$router.push("/");
-    }
+  beforeRouteEnter(to, from, next) {
+    next((vm) => {
+      if (!state.playerName) {
+        vm.$router.push("/");
+      }
+    });
   },
   data() {
     return {
@@ -402,13 +408,12 @@ export default {
       }
     },
     copyGameCode() {
-      let codeContainer = document.getElementById("game-code");
-
       //copy the code to clipboard
-      let code = codeContainer.getAttribute("data-code");
+      let code = state.gameID;
       navigator.clipboard.writeText(code);
 
       //show feedback to user
+      let codeContainer = document.getElementById("game-code");
       codeContainer.classList.add("copied");
       setTimeout(function () {
         codeContainer.classList.remove("copied");
@@ -430,15 +435,6 @@ export default {
         });
     },
   },
-  watch: {
-    game: function () {
-      this.error = null;
-
-      if (state.player === "player2" && !this.game.full) {
-        state.player = "player1";
-      }
-    },
-  },
 };
 </script>
 
@@ -448,7 +444,7 @@ export default {
   justify-content: space-between;
   width: 1000px;
   max-width: 90%;
-  margin: 15px auto;
+  margin: 0 auto 15px auto;
 }
 
 #leave-game,

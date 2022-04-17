@@ -1,14 +1,5 @@
 <template>
-  <!-- this was for joining a game by manually providing the game ID -->
-  <!--div>
-    <label id="game-id-input">Game ID: </label>
-    <input id="game-id-input" type="text" v-model="gameID" /><br />
-    <button @click.prevent="checkGameValidity">Join Game</button>
-    <p v-if="joinError" class="error-message">{{ joinError }}</p>
-  </div-->
-
   <h3>Join Game</h3>
-
   <div v-if="joinableGames" class="games-list">
     <template v-for="game in joinableGames" :key="game.gameID">
       <div v-if="game.full === false" class="game">

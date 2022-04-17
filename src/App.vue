@@ -41,7 +41,7 @@ h1 {
   font-family: "Irish Grover", cursive;
   text-align: center;
   font-size: 36px;
-  padding: 20px 0;
+  padding: 15px 0;
   background: linear-gradient(180deg, #f8f8f8 0%, #fffcf7 27.6%, #fdebae 100%);
   background-clip: text;
   -webkit-background-clip: text;
