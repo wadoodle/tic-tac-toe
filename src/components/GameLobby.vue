@@ -73,22 +73,20 @@
 </template>
 
 <script>
+import { state } from "../globalState.js";
 import { getDatabase, ref, onValue, update } from "firebase/database";
 
 export default {
-  beforeRouteEnter(to, from, next) {
-    next((vm) => {
-      if (!vm.playerName) {
-        vm.$router.push("/");
-      }
-    });
+  beforeRouteEnter() {
+    if (!state.playerName) {
+      this.$router.push("/");
+    }
   },
-  props: ["gameID", "setPlayer"],
   data() {
     return {
+      state,
       game: null,
       error: null,
-      player: this.setPlayer,
       ticTacBot: false,
       winConditions: [
         [0, 1, 2],
@@ -117,7 +115,7 @@ export default {
   methods: {
     sendMessage(message) {
       let newMessage = {
-        Sender: this.playerName,
+        Sender: state.playerName,
         Message: message,
       };
 
@@ -125,7 +123,7 @@ export default {
 
       const db = getDatabase();
       const updates = {};
-      updates["games/" + this.gameID + "/chatLog"] = this.game.chatLog;
+      updates["games/" + state.gameID + "/chatLog"] = this.game.chatLog;
 
       update(ref(db), updates).catch((error) => {
         console.log("error");
@@ -145,8 +143,8 @@ export default {
         newGameStartTurn = "player1";
       }
 
-      updates["games/" + this.gameID + "/currentTurn"] = newGameStartTurn;
-      updates["games/" + this.gameID + "/boardState"] = [
+      updates["games/" + state.gameID + "/currentTurn"] = newGameStartTurn;
+      updates["games/" + state.gameID + "/boardState"] = [
         "",
         "",
         "",
@@ -157,7 +155,7 @@ export default {
         "",
         "",
       ];
-      updates["games/" + this.gameID + "/gameState"] = "In Progress";
+      updates["games/" + state.gameID + "/gameState"] = "In Progress";
 
       update(ref(db), updates);
     },
@@ -169,7 +167,7 @@ export default {
       }
 
       const playersHere = this.game.full;
-      const myTurn = this.game.currentTurn === this.player;
+      const myTurn = this.game.currentTurn === state.player;
       const emptySpace = this.game.boardState[index] === "";
 
       //can only move if other player is present, it's your turn, and an empty space has been selected.
@@ -183,13 +181,13 @@ export default {
         this.error = null;
 
         //first player gets X's second player gets 0's
-        const XO = this.player === "player1" ? "X" : "O";
+        const XO = state.player === "player1" ? "X" : "O";
         this.game.boardState[index] = XO;
 
         //record move to db
         const db = getDatabase();
         const updates = {};
-        updates["games/" + this.gameID + "/boardState"] = this.game.boardState;
+        updates["games/" + state.gameID + "/boardState"] = this.game.boardState;
 
         //check if move ends the game
         let gameState = this.checkGameState();
@@ -199,15 +197,15 @@ export default {
           this.game.currentTurn =
             this.game.currentTurn === "player1" ? "player2" : "player1";
 
-          updates["games/" + this.gameID + "/currentTurn"] =
+          updates["games/" + state.gameID + "/currentTurn"] =
             this.game.currentTurn;
         } else if (gameState === "It's a tie!") {
           //if so update game state
-          updates["games/" + this.gameID + "/gameState"] = gameState;
+          updates["games/" + state.gameID + "/gameState"] = gameState;
         } else {
           //someone has won
-          updates["games/" + this.gameID + "/gameState"] = gameState;
-          updates["games/" + this.gameID + "/wins/" + this.game.currentTurn] =
+          updates["games/" + state.gameID + "/gameState"] = gameState;
+          updates["games/" + state.gameID + "/wins/" + this.game.currentTurn] =
             this.game.wins[this.game.currentTurn] + 1;
         }
 
@@ -315,20 +313,20 @@ export default {
         this.game.currentTurn =
           this.game.currentTurn === "player1" ? "player2" : "player1";
 
-        updates["games/" + this.gameID + "/currentTurn"] =
+        updates["games/" + state.gameID + "/currentTurn"] =
           this.game.currentTurn;
       } else if (gameState === "It's a tie!") {
         //if so update game state
-        updates["games/" + this.gameID + "/gameState"] = gameState;
+        updates["games/" + state.gameID + "/gameState"] = gameState;
       } else {
         //someone has won
-        updates["games/" + this.gameID + "/gameState"] = gameState;
-        updates["games/" + this.gameID + "/wins/" + this.game.currentTurn] =
+        updates["games/" + state.gameID + "/gameState"] = gameState;
+        updates["games/" + state.gameID + "/wins/" + this.game.currentTurn] =
           this.game.wins[this.game.currentTurn] + 1;
       }
 
-      updates["games/" + this.gameID + "/boardState"] = this.game.boardState;
-      updates["games/" + this.gameID + "/currentTurn"] = "player1";
+      updates["games/" + state.gameID + "/boardState"] = this.game.boardState;
+      updates["games/" + state.gameID + "/currentTurn"] = "player1";
 
       update(ref(db), updates);
     },
@@ -357,7 +355,7 @@ export default {
     getGame() {
       //get game data and watch it for updates
       const db = getDatabase();
-      const game = ref(db, "games/" + this.gameID);
+      const game = ref(db, "games/" + state.gameID);
       onValue(game, (snapshot) => {
         const data = snapshot.val();
         this.game = data;
@@ -369,22 +367,22 @@ export default {
 
       //if only player in lobby, then delete game data
       if (
-        (this.player === "player1" && !this.game.full) ||
+        (state.player === "player1" && !this.game.full) ||
         this.ticTacBot === true
       ) {
-        updates["games/" + this.gameID] = null;
+        updates["games/" + state.gameID] = null;
         update(ref(db), updates).then(this.$router.push("/lobby"));
       } else {
         //reset game state
         const remainingPlayer =
-          this.player === "player1" ? "player2" : "player1";
+          state.player === "player1" ? "player2" : "player1";
         const remainingPlayerName = this.game[remainingPlayer];
 
-        updates["games/" + this.gameID + "/full"] = false;
-        updates["games/" + this.gameID + "/player1"] = remainingPlayerName;
-        updates["games/" + this.gameID + "/player2"] = null;
-        updates["games/" + this.gameID + "/currentTurn"] = "player1";
-        updates["games/" + this.gameID + "/boardState"] = [
+        updates["games/" + state.gameID + "/full"] = false;
+        updates["games/" + state.gameID + "/player1"] = remainingPlayerName;
+        updates["games/" + state.gameID + "/player2"] = null;
+        updates["games/" + state.gameID + "/currentTurn"] = "player1";
+        updates["games/" + state.gameID + "/boardState"] = [
           "",
           "",
           "",
@@ -395,8 +393,8 @@ export default {
           "",
           "",
         ];
-        updates["games/" + this.gameID + "/gameState"] = "In Progress";
-        updates["games/" + this.gameID + "/wins"] = {
+        updates["games/" + state.gameID + "/gameState"] = "In Progress";
+        updates["games/" + state.gameID + "/wins"] = {
           player1: 0,
           player2: 0,
         };
@@ -419,8 +417,8 @@ export default {
     playAgainstTicTacBot() {
       const db = getDatabase();
       const updates = {};
-      updates["games/" + this.gameID + "/player2"] = "TicTac Bot";
-      updates["games/" + this.gameID + "/full"] = true;
+      updates["games/" + state.gameID + "/player2"] = "TicTac Bot";
+      updates["games/" + state.gameID + "/full"] = true;
 
       update(ref(db), updates)
         .then(() => {
@@ -436,8 +434,8 @@ export default {
     game: function () {
       this.error = null;
 
-      if (this.player === "player2" && !this.game.full) {
-        this.player = "player1";
+      if (state.player === "player2" && !this.game.full) {
+        state.player = "player1";
       }
     },
   },

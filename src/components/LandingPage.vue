@@ -23,19 +23,19 @@
 </template>
 
 <script>
+import { state } from "../globalState.js";
 import { getDatabase, ref, get, child, update } from "firebase/database";
 
 export default {
-  beforeRouteEnter(to, from, next) {
-    next((vm) => {
-      if (!vm.playerName) {
-        vm.$router.push("/");
-      }
-    });
+  beforeRouteEnter() {
+    if (!state.playerName) {
+      this.$router.push("/");
+    }
   },
   props: ["playerName"],
   data() {
     return {
+      state,
       joinableGames: null,
       gameID: "",
       joinError: null,
@@ -45,7 +45,7 @@ export default {
   methods: {
     validateGame() {
       //check game id was entered
-      if (this.gameID === "") {
+      if (state.gameID === "") {
         this.joinError = "Please enter a game ID.";
         return false;
       }
@@ -57,7 +57,7 @@ export default {
 
           //join game if it exists and is not full
           if (full === null) {
-            this.gameID = "";
+            state.gameID = "";
             this.joinError = "Please enter a valid game ID";
           } else if (full != true) {
             this.joinGameByID();
@@ -70,18 +70,19 @@ export default {
         });
     },
     setGameID(gameID) {
-      this.gameID = gameID;
+      state.gameID = gameID;
       this.joinGameByID();
     },
     joinGameByID() {
       const db = getDatabase();
       const updates = {};
-      updates["games/" + this.gameID + "/player2"] = this.playerName;
-      updates["games/" + this.gameID + "/full"] = true;
+      updates["games/" + state.gameID + "/player2"] = state.playerName;
+      updates["games/" + state.gameID + "/full"] = true;
 
       update(ref(db), updates)
         .then(() => {
-          this.$router.push("/game/" + this.gameID + "/player2");
+          state.player = 'player2';
+          this.$router.push("/game");
         })
         .catch((error) => {
           console.log("error");

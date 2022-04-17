@@ -21,13 +21,14 @@
 
 
 <script>
+import { state } from "../globalState.js";
 import { getDatabase, ref, onValue } from "firebase/database";
 
 export default {
-  props: ["playerName"],
   emits: ["join-game"],
   data() {
     return {
+      state,
       joinableGames: null,
       joinError: null,
     };

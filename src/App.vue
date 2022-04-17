@@ -1,22 +1,15 @@
 <template>
   <h1>TIC-TAC-TOE</h1>
-  <router-view @set-name="setName" :player-name="playerName"></router-view>
+  <router-view></router-view>
 </template>
 
 
 <script>
 export default {
   data() {
-    return {
-      playerName: "",
-    };
+    return {};
   },
-  methods: {
-    setName(enteredName) {
-      this.playerName = enteredName;
-      this.$router.push("/lobby");
-    },
-  },
+  methods: {},
 };
 </script>
 
@@ -149,19 +142,6 @@ select {
   border-top: 2px solid #46cbb3;
   border-bottom: 2px solid #46cbb3;
   border-left: 2px solid #46cbb3;
-}
-
-#chat input[type="text"]:focus,
-.form-style input[type="text"]:focus,
-.form-style input[type="date"]:focus,
-.form-style input[type="datetime"]:focus,
-.form-style input[type="number"]:focus,
-.form-style input[type="search"]:focus,
-.form-style input[type="time"]:focus,
-.form-style input[type="url"]:focus,
-.form-style input[type="email"]:focus,
-.form-style textarea:focus,
-.form-style select:focus {
 }
 
 .form-style .field-divided {

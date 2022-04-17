@@ -14,7 +14,7 @@ const router = createRouter({
   routes: [
     { path: '/', component: WelcomePage },
     { path: '/lobby', component: LandingPage },
-    { path: '/game/:gameID/:setPlayer', component: GameLobby, props: true },
+    { path: '/game', component: GameLobby, props: true },
   ]
 })
 

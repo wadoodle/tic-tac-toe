@@ -8,12 +8,14 @@
 
 
 <script>
+import { state } from "../globalState.js";
 import { getDatabase, set, ref } from "firebase/database";
 
 export default {
   props: ["playerName"],
   data() {
     return {
+      state,
       createError: null,
     };
   },
@@ -22,11 +24,11 @@ export default {
     newGame() {
       //create new game data then navigate to game page
       const db = getDatabase();
-      const gameID = this.generateID(25);
-      set(ref(db, "games/" + gameID), {
-        gameID: gameID,
+      state.gameID = this.generateID(25);
+      set(ref(db, "games/" + state.gameID), {
+        gameID: state.gameID,
         full: false,
-        player1: this.playerName,
+        player1: state.playerName,
         currentTurn: "player1",
         boardState: ["", "", "", "", "", "", "", "", ""],
         gameState: "In Progress",
@@ -42,7 +44,8 @@ export default {
         ],
       })
         .then(() => {
-          this.$router.push("/game/" + gameID + "/player1");
+          state.player = "player1";
+          this.$router.push("/game");
         })
         .catch((error) => {
           this.createError = error;

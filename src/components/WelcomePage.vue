@@ -13,9 +13,12 @@
 </template>
 
 <script>
+import { state } from "../globalState.js";
+
 export default {
   data() {
     return {
+      state,
       nameError: false,
       enteredName: "",
     };
@@ -31,7 +34,8 @@ export default {
       }
     },
     setPlayerName() {
-      this.$emit("set-name", this.enteredName);
+      state.playerName = this.enteredName;
+      this.$router.push("/lobby");
     },
   },
 };
