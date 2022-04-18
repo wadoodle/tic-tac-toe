@@ -1,6 +1,6 @@
 # Wadoodle's Ultimate Tic Tac Toe
 
-### **[Play now!](https://wadoodle.github.io/tic-tac-toe/)**
+### **[Play now!](https://hugsandkisses.netlify.app/)**
 
 #### How To Run
 
